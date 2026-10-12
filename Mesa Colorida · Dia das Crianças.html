@@ -1,0 +1,1160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mesa Colorida · Dia das Crianças</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#FBF9FF; --ink:#2A2147; --muted:#625A8A; --card:#FFFFFF; --line:rgba(42,33,71,.12);
+  --coral:#FF6F61; --sun:#FFC043; --mint:#22BFA1; --sky:#4C9DFF; --grape:#9F6BFF; --pink:#FF8AC1;
+  --shadow:0 20px 40px -20px rgba(76,48,160,.45);
+  --head:'Baloo 2','Trebuchet MS','Segoe UI',system-ui,sans-serif;
+  --body:'Nunito','Segoe UI',system-ui,-apple-system,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){--bg:#14102B;--ink:#F4F0FF;--muted:#B9B1DE;--card:#211B45;--line:rgba(244,240,255,.14);--shadow:0 20px 40px -20px rgba(0,0,0,.7)}
+}
+:root[data-theme="dark"]{--bg:#14102B;--ink:#F4F0FF;--muted:#B9B1DE;--card:#211B45;--line:rgba(244,240,255,.14);--shadow:0 20px 40px -20px rgba(0,0,0,.7)}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px);scroll-behavior:smooth}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55;min-height:100vh;overflow-x:hidden}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--grape);outline-offset:3px;border-radius:10px}
+.hidden{display:none!important}
+
+/* ---------- céu flutuante (antigravidade) ---------- */
+.sky{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0;--px:0;--py:0}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.55}
+.blob.b1{width:46vmax;height:46vmax;left:-14vmax;top:-16vmax;background:radial-gradient(circle,var(--pink),transparent 65%)}
+.blob.b2{width:44vmax;height:44vmax;right:-14vmax;top:8vmax;background:radial-gradient(circle,var(--sky),transparent 65%);opacity:.4}
+.blob.b3{width:40vmax;height:40vmax;left:22vmax;bottom:-22vmax;background:radial-gradient(circle,var(--sun),transparent 65%);opacity:.45}
+.floater{position:absolute;left:var(--x);top:var(--y);font-size:var(--s);transform:translate(calc(var(--px)*var(--depth)*1px),calc(var(--py)*var(--depth)*1px));transition:transform .5s cubic-bezier(.2,.8,.2,1)}
+.floater span{display:block;animation:drift var(--d) ease-in-out infinite alternate;animation-delay:var(--delay);filter:drop-shadow(0 10px 10px rgba(60,30,120,.18))}
+@keyframes drift{from{transform:translateY(14px) rotate(-8deg)}to{transform:translateY(-22px) rotate(10deg)}}
+
+/* ---------- estrutura ---------- */
+.app{position:relative;z-index:1}
+.screen{animation:fadeIn .6s ease both}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* ---------- tela de perfis ---------- */
+#screen-profile{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:48px 20px 64px}
+.brand-mini{font-family:var(--head);font-weight:700;font-size:1.05rem;color:var(--muted);margin:0 0 6px}
+#screen-profile h1{font-family:var(--head);font-weight:800;font-size:clamp(2.4rem,7vw,4.6rem);line-height:1.02;margin:0 0 10px;letter-spacing:-.01em}
+.lead{font-size:1.1rem;color:var(--muted);max-width:34rem;margin:0 auto 36px}
+.profiles{display:flex;gap:clamp(18px,5vw,56px);flex-wrap:wrap;justify-content:center}
+.profile{background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--muted);transition:transform .45s cubic-bezier(.2,.9,.25,1.2),color .2s}
+.avatar{width:clamp(150px,34vw,210px);aspect-ratio:1;border-radius:34%;display:grid;place-items:center;font-size:clamp(72px,16vw,104px);box-shadow:var(--shadow);position:relative;overflow:hidden;animation:bob 4.8s ease-in-out infinite alternate}
+.profile:nth-child(2) .avatar{animation-delay:-2.4s}
+.avatar::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 28% 22%,rgba(255,255,255,.55),transparent 45%)}
+.avatar span{position:relative;z-index:1;filter:drop-shadow(0 8px 8px rgba(0,0,0,.18))}
+@keyframes bob{from{transform:translateY(6px)}to{transform:translateY(-10px)}}
+.profile .pname{font-family:var(--head);font-weight:700;font-size:1.5rem;color:var(--ink);line-height:1.1}
+.profile .psub{font-size:.98rem}
+@media (hover:hover){.profile:hover{transform:translateY(-14px) rotate(-2deg)}.profile:hover .psub{color:var(--ink)}.profile:nth-child(2):hover{transform:translateY(-14px) rotate(2deg)}}
+.profile:active{transform:scale(.97)}
+.agepick{margin-top:44px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;justify-content:center;color:var(--muted)}
+.agepick select{appearance:none;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:11px 44px 11px 20px;font-weight:700;color:var(--ink);background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 22px) 52%,calc(100% - 16px) 52%;background-size:6px 6px;background-repeat:no-repeat}
+.g-coral{--g1:#FF8A5C;--g2:#FF4F7B}.g-sun{--g1:#FFD35C;--g2:#FF9F43}.g-mint{--g1:#4EE0B8;--g2:#1AA6B7}.g-sky{--g1:#6CB6FF;--g2:#6B6CFF}.g-grape{--g1:#B98BFF;--g2:#7B4DFF}.g-pink{--g1:#FFA6D2;--g2:#FF6FA5}
+.avatar,.card .art,.hero,.mhead{background:linear-gradient(140deg,var(--g1),var(--g2))}
+
+/* ---------- navegação ---------- */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;gap:14px;padding:12px clamp(16px,4vw,48px);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);background:color-mix(in srgb,var(--bg) 78%,transparent);border-bottom:1px solid var(--line)}
+.logo{font-family:var(--head);font-weight:800;font-size:1.35rem;margin-right:auto;white-space:nowrap}
+.search{position:relative;flex:0 1 300px}
+.search input{width:100%;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:9px 16px 9px 42px;color:var(--ink)}
+.search::before{content:"🔎";position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1rem}
+.chip{display:flex;align-items:center;gap:10px;background:var(--card);border:2px solid var(--line);border-radius:999px;padding:5px 14px 5px 5px;font-weight:700;white-space:nowrap}
+.chip .mini{width:34px;height:34px;border-radius:12px;display:grid;place-items:center;font-size:20px}
+.chip .mini{background:linear-gradient(140deg,var(--g1),var(--g2))}
+@media (max-width:640px){.logo small{display:none}.chip .lbl{display:none}.chip{padding:5px}.search{flex-basis:140px}}
+
+/* ---------- destaque ---------- */
+.hero{margin:clamp(14px,3vw,28px) clamp(16px,4vw,48px) 8px;border-radius:32px;padding:clamp(28px,5vw,60px);color:#fff;position:relative;overflow:hidden;box-shadow:var(--shadow);min-height:300px;display:flex;flex-direction:column;justify-content:center}
+.hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 20%,rgba(255,255,255,.35),transparent 40%),radial-gradient(circle at 10% 110%,rgba(255,255,255,.22),transparent 45%)}
+.hero>*{position:relative;max-width:34rem}
+.hero .tag{font-weight:800;font-size:.95rem;opacity:.95;margin:0 0 6px}
+.hero h2{font-family:var(--head);font-weight:800;font-size:clamp(2.2rem,6vw,3.8rem);line-height:1.02;margin:0 0 12px}
+.hero p.d{font-size:1.12rem;margin:0 0 22px;text-shadow:0 1px 8px rgba(0,0,0,.12)}
+.hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{border:0;border-radius:999px;padding:12px 24px;font-weight:800;background:#fff;color:#3b2a7a;box-shadow:0 10px 20px -10px rgba(0,0,0,.4);transition:transform .2s}
+.btn.ghost{background:rgba(255,255,255,.22);color:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6)}
+.btn:hover{transform:translateY(-3px)}
+.hero .big{position:absolute!important;right:clamp(10px,5vw,70px);top:50%;transform:translateY(-50%);font-size:clamp(90px,18vw,210px);max-width:none;filter:drop-shadow(0 20px 20px rgba(0,0,0,.2));animation:bob 5s ease-in-out infinite alternate;pointer-events:none}
+@media (max-width:640px){.hero .big{opacity:.35}}
+
+/* ---------- fileiras ---------- */
+main{padding-bottom:30px}
+.row{margin-top:28px}
+.row h3{font-family:var(--head);font-weight:800;font-size:clamp(1.4rem,3vw,1.9rem);margin:0 clamp(16px,4vw,48px);line-height:1.15}
+.row .rsub{margin:0 clamp(16px,4vw,48px) 10px;color:var(--muted);font-size:.98rem}
+.scroller-wrap{position:relative}
+.scroller{display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x proximity;padding:14px clamp(16px,4vw,48px) 26px;scrollbar-width:none}
+.scroller::-webkit-scrollbar{display:none}
+.arrow{position:absolute;top:calc(50% - 14px);transform:translateY(-50%);width:46px;height:46px;border-radius:50%;border:0;background:var(--card);box-shadow:var(--shadow);font-size:1.3rem;font-weight:800;z-index:3;opacity:0;transition:opacity .2s}
+.arrow.l{left:8px}.arrow.r{right:8px}
+.scroller-wrap:hover .arrow{opacity:1}
+@media (hover:none){.arrow{display:none}}
+.card{flex:0 0 auto;width:min(210px,56vw);scroll-snap-align:start;background:var(--card);border:0;border-radius:26px;padding:0;text-align:left;overflow:hidden;box-shadow:var(--shadow);position:relative;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.2,.9,.25,1.2)}
+.card .art{height:138px;display:grid;place-items:center;font-size:68px;position:relative;overflow:hidden}
+.card .art::before{content:"";position:absolute;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.22);right:-30px;top:-34px}
+.card .art::after{content:"";position:absolute;width:70px;height:70px;border-radius:50%;background:rgba(255,255,255,.16);left:-18px;bottom:-22px}
+.card .art span{position:relative;z-index:1;filter:drop-shadow(0 8px 8px rgba(0,0,0,.2))}
+.card .body{padding:12px 16px 18px}
+.card .ct{font-family:var(--head);font-weight:700;font-size:1.12rem;line-height:1.15;margin:0 0 4px;color:var(--ink)}
+.card .cs{font-size:.88rem;color:var(--muted);line-height:1.35}
+.card .badge{position:absolute;top:10px;left:10px;z-index:2;background:#fff;color:#3b2a7a;font-weight:800;font-size:.78rem;padding:3px 10px;border-radius:999px}
+.card .seen{position:absolute;top:10px;right:10px;z-index:2;width:26px;height:26px;border-radius:50%;background:#fff;color:#1AA67F;font-weight:800;display:none;place-items:center;font-size:.9rem}
+.card.viewed .seen{display:grid}
+@media (hover:hover){.card:hover{transform:translateY(-10px) scale(1.04) rotate(-.8deg)}}
+.empty{margin:30px clamp(16px,4vw,48px);color:var(--muted)}
+
+/* ---------- janela de conteúdo ---------- */
+dialog{border:0;padding:0;background:transparent;max-width:none;max-height:none;width:100%;height:100%;overflow:visible;color:var(--ink)}
+dialog::backdrop{background:rgba(24,16,56,.58);backdrop-filter:blur(6px)}
+.sheet{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(760px,calc(100% - 24px));max-height:calc(100% - 28px);background:var(--card);border-radius:32px;box-shadow:0 40px 80px -20px rgba(0,0,0,.55);display:flex;flex-direction:column;overflow:hidden;animation:pop .45s cubic-bezier(.2,.9,.25,1.15)}
+@keyframes pop{from{opacity:0;transform:translate(-50%,-46%) scale(.94)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.mhead{color:#fff;padding:26px 28px 22px;position:relative;flex:0 0 auto}
+.mhead .me{font-size:54px;line-height:1;filter:drop-shadow(0 8px 8px rgba(0,0,0,.2))}
+.mhead h4{font-family:var(--head);font-weight:800;font-size:clamp(1.7rem,4.5vw,2.3rem);margin:6px 0 0;line-height:1.05;max-width:90%}
+.mhead p{margin:4px 0 0;opacity:.95}
+.xbtn{position:absolute;right:16px;top:16px;width:42px;height:42px;border-radius:50%;border:0;background:rgba(255,255,255,.9);color:#3b2a7a;font-weight:800;font-size:1.1rem}
+.mbody{padding:22px 28px 10px;overflow-y:auto;flex:1 1 auto}
+.mbody .intro{font-size:1.12rem;font-weight:700;margin:0 0 14px}
+.mbody ul{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.mbody li{position:relative;padding-left:30px}
+.mbody li::before{content:"";position:absolute;left:3px;top:.42em;width:14px;height:14px;border-radius:50%;background:linear-gradient(140deg,var(--g1),var(--g2))}
+.note{margin:18px 0 6px;border-radius:20px;padding:14px 18px;font-weight:600}
+.note.tip{background:color-mix(in srgb,var(--mint) 18%,var(--card));border:2px solid color-mix(in srgb,var(--mint) 50%,transparent)}
+.note.warn{background:color-mix(in srgb,var(--sun) 24%,var(--card));border:2px solid color-mix(in srgb,var(--sun) 65%,transparent)}
+.note b.k{display:block;font-family:var(--head);font-size:1.02rem;margin-bottom:2px}
+.mfoot{display:flex;justify-content:space-between;gap:12px;padding:14px 28px 20px;flex:0 0 auto;border-top:1px solid var(--line);align-items:center;flex-wrap:wrap}
+.mfoot .btn{background:linear-gradient(140deg,var(--g1),var(--g2));color:#fff}
+.mfoot .btn.plain{background:var(--card);color:var(--ink);box-shadow:inset 0 0 0 2px var(--line)}
+.mfoot small{color:var(--muted)}
+
+/* ---------- rodapé ---------- */
+footer{position:relative;z-index:1;margin:20px clamp(16px,4vw,48px) 40px;padding:22px 24px;border-radius:24px;background:var(--card);box-shadow:var(--shadow);color:var(--muted);font-size:.92rem}
+footer b{color:var(--ink)}
+footer a{color:var(--grape);font-weight:700}
+
+/* ---------- efeito frutinhas ---------- */
+.fruit{position:fixed;z-index:9999;pointer-events:none;will-change:transform,opacity;line-height:1;filter:drop-shadow(0 6px 6px rgba(60,30,120,.22))}
+.ring{position:fixed;z-index:9998;pointer-events:none;border-radius:50%;border:3px solid rgba(255,255,255,.9);box-shadow:0 0 40px 6px rgba(255,160,210,.55)}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div class="sky" id="sky" aria-hidden="true">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+</div>
+
+<div class="app">
+
+  <!-- ===== Escolha de perfil ===== -->
+  <section id="screen-profile" class="screen">
+    <p class="brand-mini">Dia das Crianças · Hospital São Luiz</p>
+    <h1>Quem vai à mesa hoje?</h1>
+    <p class="lead">Escolha o perfil de acordo com a idade da criança. Cada um tem histórias, dicas e receitas de cuidado do seu jeito.</p>
+    <div class="profiles">
+      <button class="profile" id="p-bebe" aria-label="Perfil até 2 anos: bebês de 0 a 23 meses">
+        <div class="avatar g-sun"><span>👶</span></div>
+        <div class="pname">Até 2 anos</div>
+        <div class="psub">Bebês de 0 a 23 meses</div>
+      </button>
+      <button class="profile" id="p-crianca" aria-label="Perfil 2 anos ou mais">
+        <div class="avatar g-sky"><span>🧒</span></div>
+        <div class="pname">2 anos ou mais</div>
+        <div class="psub">Crianças a partir de 2 anos</div>
+      </button>
+    </div>
+    <div class="agepick">
+      <label for="age">Prefere escolher pela idade?</label>
+      <select id="age">
+        <option value="">Selecione a idade</option>
+        <optgroup label="Até 2 anos">
+          <option value="bebe:s0">0 a 5 meses</option>
+          <option value="bebe:s6">6 meses</option>
+          <option value="bebe:s7">7 e 8 meses</option>
+          <option value="bebe:s9">9 a 11 meses</option>
+          <option value="bebe:s12">1 ano a 1 ano e 11 meses</option>
+        </optgroup>
+        <optgroup label="2 anos ou mais">
+          <option value="crianca:">2 anos</option>
+          <option value="crianca:">3 a 5 anos</option>
+          <option value="crianca:">6 a 9 anos</option>
+          <option value="crianca:">10 anos ou mais</option>
+        </optgroup>
+      </select>
+    </div>
+  </section>
+
+  <!-- ===== Navegação ===== -->
+  <section id="screen-browse" class="screen hidden">
+    <header class="top">
+      <div class="logo">🍉 Mesa Colorida</div>
+      <div class="search"><input id="q" type="search" placeholder="Buscar um assunto" aria-label="Buscar um assunto"></div>
+      <button class="chip" id="switch" aria-label="Trocar perfil"><span class="mini" id="chip-av"></span><span class="lbl" id="chip-name"></span></button>
+    </header>
+    <main id="main" tabindex="-1"></main>
+    <footer>
+      <p><b>Conteúdo educativo, reescrito com palavras próprias.</b> As informações foram organizadas a partir do <i>Guia Alimentar para Crianças Brasileiras Menores de 2 Anos</i> (Ministério da Saúde, versão resumida, 2021) e dos princípios do <i>Guia Alimentar para a População Brasileira</i> (Ministério da Saúde, 2014). Este site não é uma publicação oficial do Ministério da Saúde.</p>
+      <p>Ele não substitui a consulta com a equipe de saúde. Em caso de dúvida sobre o seu filho, converse com o pediatra, o nutricionista ou a equipe do hospital. Para ler os guias completos, procure a <a href="https://bvsms.saude.gov.br/" target="_blank" rel="noopener">Biblioteca Virtual em Saúde do Ministério da Saúde</a>.</p>
+    </footer>
+  </section>
+
+</div>
+
+<dialog id="modal" aria-labelledby="m-title">
+  <div class="sheet" id="sheet">
+    <div class="mhead" id="m-head">
+      <div class="me" id="m-emoji"></div>
+      <h4 id="m-title"></h4>
+      <p id="m-sub"></p>
+      <button class="xbtn" id="m-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="mbody" id="m-body"></div>
+    <div class="mfoot">
+      <button class="btn plain" id="m-close2">Voltar</button>
+      <button class="btn" id="m-next">Próximo assunto</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+/* =========================================================
+   CONTEÚDO
+   ========================================================= */
+const ROWS = {
+  bebe: [
+    {k:'etapa',    t:'Para o momento do seu bebê',   s:'Cada fase tem o seu jeito de comer'},
+    {k:'leite',    t:'Leite materno, o primeiro sabor', s:'Amamentar, guardar o leite e tirar dúvidas'},
+    {k:'grupos',   t:'Conhecendo os alimentos',      s:'O que é comida de verdade e o que só parece'},
+    {k:'mesa',     t:'Hora de comer',                s:'Como fazer da refeição um momento bom'},
+    {k:'cozinha',  t:'Cozinhar em casa',             s:'Compras, higiene e organização'},
+    {k:'desafios', t:'Desafios do dia a dia',        s:'Trabalho, creche, recusa e palpites'},
+    {k:'cuidados', t:'Cuidados e direitos',          s:'Sorriso, sol e o que a lei garante'}
+  ],
+  crianca: [
+    {k:'regra',   t:'A regra de ouro',               s:'A ideia central para comer bem em família'},
+    {k:'passos',  t:'Os 10 passos para comer bem',   s:'Um passo de cada vez, sem complicação'},
+    {k:'prato',   t:'Montando o prato',              s:'Cores, grupos e bebidas'},
+    {k:'mesa',    t:'Hora de comer',                 s:'Atenção, apetite e companhia'},
+    {k:'cozinha', t:'Cozinha segura',                s:'Higiene, compras e como guardar a comida'},
+    {k:'dia',     t:'No dia a dia',                  s:'Lancheira, escola, propaganda e sorriso'}
+  ]
+};
+
+const STAGES_BEBE = ['s0','s6','s7','s9','s12'];
+
+const CARDS = {
+bebe: [
+/* ---------- etapa ---------- */
+{id:'s0', row:'etapa', e:'🤱', c:'mint', t:'0 a 5 meses', s:'Só leite do peito',
+ intro:`Nos primeiros seis meses, o leite materno faz tudo sozinho: alimenta e hidrata.`,
+ p:[`Não precisa de água, chá, suco, outro leite, fruta, papinha ou mingau, <b>nem em dias quentes e secos</b>. Se o bebê quiser mamar mais para matar a sede, é só oferecer o peito.`,
+    `Oferecer outros alimentos antes da hora aumenta o risco de o bebê adoecer e pode atrapalhar o aproveitamento de nutrientes do leite, como ferro e zinco.`,
+    `Por volta dos 6 meses o corpinho costuma estar maduro para receber comidinhas.`,
+    `Para bebês prematuros, é o profissional de saúde quem indica o melhor momento de começar.`],
+ tip:`Quem cuida também precisa de cuidado: descanso, água por perto e ajuda com a casa fazem diferença na amamentação.`},
+
+{id:'s6', row:'etapa', e:'🥄', c:'sun', t:'6 meses', s:'As primeiras colheradas',
+ intro:`O leite materno continua e entram as primeiras comidinhas, em pouquíssima quantidade.`,
+ p:[`<b>Como o bebê está:</b> senta com pouco ou nenhum apoio, empurra menos a comida com a língua, já mastiga, e os primeiros dentes aparecem.`,
+    `<b>Fome:</b> chora e se inclina para a colher, segura a mão de quem oferece, abre a boca. <b>Saciedade:</b> vira a cabeça ou o corpo, perde o interesse, empurra a mão, fecha a boca ou chora.`,
+    `<b>Dia a dia:</b> leite materno no café da manhã, fruta com leite no lanche da manhã e da tarde, almoço completo, e leite materno no jantar e antes de dormir.`,
+    `<b>O almoço:</b> um alimento de cada grupo (cereal ou raiz, feijão, legumes e verduras, carne ou ovo), mais um pedacinho de fruta. Algo como 2 a 3 colheres de sopa no total, só como referência.`,
+    `<b>Textura:</b> alimentos separados no prato e bem amassados com garfo. Nada de liquidificador ou peneira. Carnes bem cozidas e picadas ou desfiadas.`],
+ tip:`Comece com cerca de 1 colher de sobremesa de cada alimento. Se o bebê recusar, espere uns dias e ofereça de novo, ou mude o preparo (a cenoura amassada não agradou? Tente em pedaço para ele segurar).`,
+ warn:`Aos 6 meses a língua ainda sai para fora por reflexo. Isso parece recusa, mas não é.`},
+
+{id:'s7', row:'etapa', e:'🥕', c:'coral', t:'7 e 8 meses', s:'Mais independência',
+ intro:`O bebê já senta sem apoio, pega a comida e leva à boca.`,
+ p:[`<b>Fome:</b> inclina-se para a colher ou para o alimento, pega ou aponta a comida. <b>Saciedade:</b> come mais devagar, fecha a boca, empurra o alimento ou deixa a comida parada na boca.`,
+    `<b>Rotina:</b> leite materno no café da manhã, fruta com leite nos lanches, almoço e jantar completos e leite antes de dormir.`,
+    `<b>Quantidade de referência:</b> 3 a 4 colheres de sopa no total em cada refeição principal. Respeite sempre o apetite do dia.`,
+    `<b>Textura:</b> menos amassado do que antes, ou bem picado, conforme o bebê aceita.`],
+ tip:`A água entra ao longo do dia, nos intervalos das refeições, em copinho.`},
+
+{id:'s9', row:'etapa', e:'🍌', c:'pink', t:'9 a 11 meses', s:'Pinça, dentadas e muita bagunça',
+ intro:`O bebê engatinha ou anda com apoio, faz o movimento de pinça com os dedinhos e já morde alimentos mais firmes.`,
+ p:[`<b>Ele pode comer com bastante independência</b>, mas ainda precisa de ajuda. Deixe a sujeira acontecer: faz parte de aprender.`,
+    `<b>Fome:</b> aponta ou pega os alimentos, fica animado ao ver a comida. <b>Saciedade:</b> come mais devagar, fecha a boca, empurra ou deixa a comida parada na boca.`,
+    `<b>Quantidade de referência:</b> 4 a 5 colheres de sopa no total em cada refeição principal.`,
+    `<b>Textura:</b> já pode ser picado, igual ao da família. As carnes podem ser desfiadas.`],
+ tip:`Frutas pequenas ou com caroço, como uva e acerola, pedem cuidado: tire as sementes e corte em 2 a 4 pedaços.`},
+
+{id:'s12', row:'etapa', e:'🍎', c:'grape', t:'1 a 2 anos', s:'Quase na mesa de gente grande',
+ intro:`Anda com pouca ou nenhuma ajuda, come de colher, segura o copo com as duas mãos e ganha molares.`,
+ p:[`<b>Fome:</b> junta palavras e gestos, aponta, leva o adulto até onde estão os alimentos. <b>Saciedade:</b> balança a cabeça, diz que não quer, sai da mesa, brinca ou joga a comida.`,
+    `<b>Café da manhã:</b> fruta, ou cereal (pão caseiro, aveia, cuscuz de milho), ou raízes (aipim, batata-doce, inhame), sempre com leite materno.`,
+    `<b>Lanches:</b> fruta, ou cereal, ou raiz, com leite materno. <b>Almoço e jantar:</b> o mesmo prato dos outros grupos, em torno de 5 a 6 colheres de sopa no total.`,
+    `<b>Textura:</b> pedaços maiores, na mesma consistência da comida da família.`],
+ tip:`O leite materno segue sendo bem-vindo sempre que a criança quiser, até os 2 anos ou mais.`},
+
+/* ---------- leite ---------- */
+{id:'l1', row:'leite', e:'💛', c:'pink', t:'Por que amamentar?', s:'Motivos de sobra',
+ intro:`A recomendação é amamentar até os 2 anos ou mais, sendo só leite materno até os 6 meses.`,
+ p:[`Faz bem à <b>saúde e ao desenvolvimento</b> da criança.`,
+    `Faz bem à <b>saúde da mulher</b>.`,
+    `Fortalece o <b>vínculo afetivo</b> entre quem mama e quem amamenta.`,
+    `É <b>econômico</b>, faz bem à <b>sociedade</b> e ao <b>planeta</b>.`,
+    `Cada experiência de amamentação é única, e nem sempre é fácil no começo. Paciência, informação e apoio ajudam muito.`]},
+
+{id:'l2', row:'leite', e:'🤗', c:'coral', t:'Posição e pega', s:'Confortável para os dois',
+ intro:`Não existe uma posição certa: vale sentada, recostada, deitada, do jeito que for bom para a mãe e para o bebê.`,
+ p:[`<b>Pega boa:</b> boca bem aberta, lábios virados para fora (boquinha de peixe), queixo encostado na mama e mais aréola visível acima do que abaixo da boca.`,
+    `Apoie a mama com a mão em forma de <b>C</b> (não em tesoura) e leve o bebê ao peito quando a boca estiver bem aberta.`,
+    `O rosto fica de frente para a mama, com o nariz na altura do mamilo. Nada deve ficar entre a boca e o peito: roupa, pano ou dedos.`,
+    `<b>Amamentar não deve doer.</b> Se dói, vale rever a pega e a posição.`,
+    `Comece cedo, de preferência na primeira hora de vida, e amamente sempre que o bebê pedir (livre demanda). Deixe-o esvaziar bem uma mama antes de oferecer a outra.`,
+    `<b>Sinais de que quer mamar:</b> abre a boca virando a cabeça como quem procura o peito, fica inquieto, leva as mãos à boca e, por último, chora.`]},
+
+{id:'l3', row:'leite', e:'🧸', c:'mint', t:'O que ajuda e o que atrapalha', s:'Pequenos cuidados, grande efeito',
+ intro:`Amamentar é mais fácil quando a mulher é cuidada também.`,
+ p:[`<b>Ajuda:</b> alimentação baseada em comida de verdade, água com frequência (a sede aumenta), descanso e uma rede de apoio: pai, companheiro ou companheira, avós, amigos e até a creche.`,
+    `Ninguém pode amamentar pela mãe, mas todos podem dividir as tarefas da casa, ir às consultas junto e ouvir nos momentos de angústia.`,
+    `<b>Atrapalha:</b> dar outro leite ou fórmula sem necessidade, começar sólidos ou papinhas antes dos 6 meses, mamadeira, chupeta, fumar, tomar remédio por conta própria e beber álcool.`,
+    `Não há prova de que algum alimento ou bebida aumente ou diminua o leite, nem de que cause cólica no bebê.`]},
+
+{id:'l4', row:'leite', e:'🍼', c:'sky', t:'Mamadeira e chupeta', s:'Por que evitar',
+ intro:`O jeito de sugar na mamadeira é diferente do jeito de sugar no peito, e o bebê pode se confundir.`,
+ p:[`Na mamadeira o leite sai com mais facilidade. O bebê pode estranhar o peito, ficar frustrado e até recusá-lo.`,
+    `Também atrapalha a capacidade de regular o apetite e pode influenciar a deglutição, a mastigação e a fala.`,
+    `Até os bebês bem pequenos aceitam bem líquidos no <b>copo</b>. A mamadeira ainda pode ser fonte de contaminação.`,
+    `Quem usa chupeta tende a mamar menos tempo. Qualquer tipo pode afetar o alinhamento dos dentes, a fala, a mastigação e a respiração, e aumenta a chance de sapinho.`]},
+
+{id:'l5', row:'leite', e:'🩹', c:'sun', t:'Dificuldades comuns', s:'E o que pode ser feito',
+ intro:`Quase todo mundo passa por algum perrengue. A boa notícia: a maioria tem solução.`,
+ p:[`<b>Leite demorando a descer:</b> confiança, apoio e sucção frequente ajudam o leite a descer e a produção a se ajustar.`,
+    `<b>Bebê com dificuldade de sugar no início:</b> melhorar a pega, variar a posição, suspender bicos e chupetas e, se preciso, tirar o leite e oferecer no copo ou colher.`,
+    `<b>Mamilos doloridos ou machucados:</b> corrigir a pega, variar posições, começar pela mama menos machucada e enxaguar só com água limpa. Não há prova de que cremes ou pomadas ajudem a cicatrizar.`,
+    `<b>Mama muito cheia (leite empedrado):</b> amamentar sempre que o bebê quiser, massagear com movimentos suaves e tirar um pouco de leite antes da mamada.`,
+    `<b>Bloqueio de ductos:</b> amamentar com frequência, massagear a área, esvaziar bem e variar as posições.`,
+    `<b>Pouco leite (sensação):</b> ambiente calmo, pega e posição boas, mamadas frequentes (inclusive à noite), esvaziar uma mama antes da outra, água, boa alimentação e descanso.`,
+    `<b>Excesso de leite:</b> amamentar numa mama por vez, preferir posições mais deitadas e considerar doar para um Banco de Leite Humano.`],
+ warn:`Se a mama estiver vermelha, quente e dolorida (mastite), procure um serviço de saúde na hora. A amamentação não precisa parar durante o tratamento.`},
+
+{id:'l6', row:'leite', e:'🥛', c:'mint', t:'Tirar, guardar e oferecer o leite', s:'Passo a passo seguro',
+ intro:`O leite pode ser tirado com as mãos, guardado e oferecido por outra pessoa quando a mãe estiver ausente.`,
+ p:[`<b>Frasco:</b> de vidro, com tampa plástica de rosca e boca larga. Lave bem, ferva o frasco e a tampa por 15 minutos e deixe secar sozinho, de boca para baixo, sem enxugar.`,
+    `<b>Preparo:</b> escolha um lugar limpo e tranquilo, prenda e cubra os cabelos, tire anéis e pulseiras, lave mãos e braços até o cotovelo com água e sabão e lave as mamas só com água.`,
+    `<b>Retirada manual:</b> massageie a mama com movimentos circulares, posicione os dedos em C, firme e empurre a aréola para trás, apertando suavemente um dedo contra o outro. Descarte os primeiros jatos. Vá mudando a posição dos dedos e alternando as mamas. Leva de 20 a 30 minutos por mama no começo, e fica mais fácil com a prática.`,
+    `<b>Guardar:</b> no freezer ou congelador por até <b>15 dias</b>, ou na prateleira mais próxima ao congelador da geladeira por até <b>12 horas</b>. Anote a data no frasco e complete até 2 dedos abaixo da tampa.`,
+    `<b>Oferecer:</b> descongele em banho-maria com o fogo apagado. <b>Não ferva nem use micro-ondas.</b> Ofereça em copinho ou colher, com o bebê acordado, bem sentado e tranquilo, encostando a borda do copo no lábio inferior. Não entorne o leite na boca.`,
+    `O leite descongelado não volta ao congelador: fica na geladeira por até 12 horas. O que sobrar no copo é descartado.`],
+ warn:`O bebê só deve receber leite da própria mãe. Bebês prematuros internados recebem leite humano pasteurizado de Banco de Leite.`},
+
+{id:'l7', row:'leite', e:'💬', c:'grape', t:'Mitos e verdades', s:'Perguntas que todo mundo faz',
+ intro:`Algumas respostas rápidas para as dúvidas mais comuns.`,
+ p:[`<b>Existe leite fraco?</b> Não. Todo leite materno é adequado.`,
+    `<b>Como saber se o bebê mamou o bastante?</b> Ele está ativo, faz pelo menos 6 xixis claros em 24 horas e cresce bem nas consultas (acompanhe na Caderneta da Criança).`,
+    `<b>Mama pequena produz pouco leite?</b> Não. Quem produz leite são as glândulas, não a gordura da mama.`,
+    `<b>Cirurgia na mama atrapalha?</b> Pode, em alguns casos. Cada situação deve ser avaliada por profissionais.`,
+    `<b>Amamentar depois dos 2 anos atrapalha a independência?</b> Não. Crianças amamentadas por mais tempo tendem a ter segurança para viver novas experiências.`,
+    `<b>Mamar no peito faz recusar outros alimentos?</b> Ao contrário: o sabor do leite varia com a alimentação da mãe e prepara o paladar para a comida da família.`,
+    `<b>Amamentar faz o peito cair?</b> Não é por isso. Genética, ganho de peso e idade pesam mais.`,
+    `<b>Dá para amamentar grávida, gêmeos, filhos de idades diferentes ou filho adotivo?</b> Em geral sim, com orientação de profissionais. O bebê mais novo tem prioridade.`,
+    `<b>A alimentação da mãe causa cólica?</b> Em geral não. A cólica costuma surgir a partir de 6 semanas e passar sozinha entre 3 e 6 meses. Se parecer ligada a um alimento específico, converse com um profissional.`,
+    `<b>Bebê só no peito pode ter alergia?</b> Pode. Sangue nas fezes, refluxo e irritabilidade devem ser comunicados à equipe de saúde.`,
+    `<b>Dá para voltar a amamentar depois de parar?</b> Sim, pelo processo de relactação, com ajuda de profissionais.`,
+    `<b>Mamadeira à noite para dormir mais?</b> Não é recomendado, porque pode afetar a amamentação.`]},
+
+{id:'l8', row:'leite', e:'🌙', c:'sky', t:'Desmame', s:'No tempo de cada dupla',
+ intro:`Desmame é o fim da amamentação, e costuma acontecer naturalmente depois dos 2 anos.`,
+ p:[`Em geral, não deve ser forçado. O tempo varia de dupla para dupla.`,
+    `<b>Sinais de que a criança está se preparando:</b> menos interesse nas mamadas, aceita alimentos variados, se sente segura com a mãe, aceita outros jeitos de consolo, dorme sem mamar e prefere brincar.`,
+    `Se a mulher precisar ou quiser desmamar antes de a criança estar pronta, o processo deve ser gradual, com muita paciência e compreensão.`,
+    `Não se recomendam métodos que mudem o sabor do leite ou façam a criança rejeitar o peito.`]},
+
+{id:'l9', row:'leite', e:'🧪', c:'coral', t:'Sem amamentação exclusiva', s:'Quando o leite materno não é só ele',
+ intro:`O melhor alimento é sempre o leite materno, e dá para voltar a amamentar exclusivamente. Procure um serviço de saúde para ajuda.`,
+ p:[`Quando possível, tire o leite e guarde para ser oferecido por outra pessoa na ausência da mãe.`,
+    `Se for necessário complementar, o profissional de saúde orienta o que e quanto oferecer, conforme a idade do bebê e o tempo de ausência da mãe.`,
+    `<b>Fórmula infantil</b> é feita pela indústria a partir do leite de vaca, adaptada às necessidades de bebês. Siga as medidas de pó e água do rótulo.`,
+    `<b>Leite de vaca modificado em casa</b> exige orientação de um profissional. O leite desnatado e o semidesnatado não são indicados antes dos 2 anos.`,
+    `<b>Compostos lácteos</b> têm embalagens parecidas com as de fórmula e leite de vaca, mas costumam ter açúcar e aditivos. Leia o rótulo com atenção.`,
+    `Bebês que só tomam fórmula, desde que preparada corretamente, não precisam de água. Quando entrarem outros alimentos, ofereça água entre as refeições.`],
+ warn:`Crianças que não são amamentadas exigem um acompanhamento mais próximo do crescimento e do desenvolvimento.`},
+
+/* ---------- grupos / conhecendo os alimentos ---------- */
+{id:'g1', row:'grupos', e:'🧩', c:'mint', t:'Os 4 tipos de alimento', s:'Do natural ao ultraprocessado',
+ intro:`O Guia Alimentar do Brasil separa os alimentos pelo quanto (e para que) foram processados.`,
+ p:[`<b>In natura ou minimamente processados:</b> vêm direto da planta ou do animal, ou só passaram por limpeza, moagem, secagem, pasteurização ou congelamento, sem sal, açúcar ou óleo. Exemplos: feijões, arroz, milho, raízes, legumes, verduras, frutas, carnes, ovos, leite, iogurte natural, castanhas sem sal e água. <b>Esta é a base da alimentação de toda a família.</b>`,
+    `<b>Ingredientes culinários:</b> sal, açúcar, óleos, azeite, manteiga, vinagre. Usados com moderação para temperar. Açúcar, melado, rapadura e mel não são para menores de 2 anos.`,
+    `<b>Processados:</b> alimentos in natura com sal ou açúcar para durar mais, como conservas, queijos e pães com poucos ingredientes. Só pequenas quantidades e de vez em quando. Para crianças, apenas queijos e pães feitos com farinha, fermento, água e sal.`,
+    `<b>Ultraprocessados:</b> formulações industriais com muitos ingredientes e aditivos. <b>Não devem ser oferecidos às crianças.</b>`]},
+
+{id:'g2', row:'grupos', e:'🔍', c:'sun', t:'Detetive de rótulos', s:'Como descobrir um ultraprocessado',
+ intro:`A lista de ingredientes conta tudo. O primeiro ingrediente é o que tem em maior quantidade; o último, em menor.`,
+ p:[`Muitos ingredientes, com nomes estranhos ou que você nunca usaria na sua cozinha? Grande chance de ser ultraprocessado.`,
+    `Aditivos costumam aparecer no final da lista: aromas naturais ou artificiais, realçadores de sabor (como glutamato monossódico), corante caramelo, emulsificantes, adoçantes.`,
+    `<b>Exemplo:</b> o macarrão comum tem poucos ingredientes (semolina de trigo, às vezes corantes naturais). O instantâneo traz farinha, gordura vegetal, sal, reguladores de acidez, estabilizantes, corante e mais de 10 ingredientes só no tempero. É ultraprocessado.`,
+    `<b>Exemplos de ultraprocessados:</b> refrigerantes, refrescos em pó e de caixinha, achocolatados, salgadinhos de pacote, biscoitos recheados, bolinhos industrializados, cereais matinais, iogurtes com sabor e tipo petit suisse, nuggets, salsicha, macarrão instantâneo e temperos em cubo.`]},
+
+{id:'g3', row:'grupos', e:'🎭', c:'pink', t:'Parece, mas não é', s:'Os disfarces dos ultraprocessados',
+ intro:`Muitos ultraprocessados se vendem como se fossem opções nutritivas.`,
+ p:[`<b>Parece cereal:</b> biscoitos, barras de cereal, pão doce, cereal matinal, farinhas instantâneas, macarrão instantâneo, lasanha e pizza prontas.`,
+    `<b>Parece raiz ou tubérculo:</b> batata chips, batata palha e batata pronta para fritar, quando levam mais do que batata, sal e óleo.`,
+    `<b>Parece suco:</b> suco em pó, refresco industrializado e néctar.`,
+    `<b>Parece carne:</b> hambúrguer, nuggets, salsicha, salame, linguiça, presunto, mortadela e empanados prontos.`,
+    `<b>Parece leite e derivados:</b> leite aromatizado, achocolatado de caixinha, bebida láctea adoçada, iogurte com sabor, queijo cheddar e fundido, composto lácteo.`,
+    `<b>Parece tempero:</b> caldos industrializados (cubo, pó ou líquido) e molhos prontos.`],
+ warn:`Consumidos em excesso, esses produtos se associam a obesidade, diabetes, hipertensão, doenças do coração, cárie e câncer, e fazem a criança gostar menos de comida de verdade.`},
+
+{id:'g4', row:'grupos', e:'🧪', c:'grape', t:'Aditivos e adoçantes', s:'O que significam no rótulo',
+ intro:`Aditivos dão cor e sabor ou ajudam o produto a durar. Como os efeitos do consumo acumulado não são conhecidos, a recomendação é evitá-los para menores de 2 anos.`,
+ p:[`<b>Aparecem como:</b> corantes artificiais (tartrazina, caramelo IV), conservantes (benzoato de sódio), fermentos químicos, realçadores de sabor (glutamato, guanilato), estabilizantes (gomas xantana e carragena, carboximetilcelulose), aromatizantes e adoçantes.`,
+    `<b>Adoçantes</b> (aspartame, ciclamato, acessulfame, sacarina, estévia, sorbitol, xilitol, sucralose e outros) estão em refrescos em pó, gelatinas, bolinhos, biscoitos e sorvetes. <b>Não são recomendados para crianças</b>, a menos que um profissional de saúde prescreva.`]},
+
+{id:'g5', row:'grupos', e:'🫘', c:'coral', t:'Feijões', s:'Pequenos grandes nutrientes',
+ intro:`Feijões de todas as cores, ervilha, lentilha, grão-de-bico e soja.`,
+ p:[`<b>O que oferecem:</b> proteínas, fibras, ferro, zinco e vitaminas do complexo B.`,
+    `Todos podem ser oferecidos a partir dos 6 meses. Deixe de molho por 8 a 12 horas antes de cozinhar, o que ajuda a evitar gases.`,
+    `Amasse com garfo. A partir de 8 meses, observe se a criança já aceita o grão inteiro.`,
+    `Casquinhas de feijão nas fezes são normais e não são motivo para deixar de oferecer.`]},
+
+{id:'g6', row:'grupos', e:'🌾', c:'sun', t:'Cereais e pães', s:'Arroz, milho, aveia e companhia',
+ intro:`Arroz, milho, trigo, aveia, fubá, massas e farinhas de cereais.`,
+ p:[`<b>O que oferecem:</b> carboidratos, fibras, minerais e vitaminas (mais ainda nos integrais). Pão caseiro é ótima opção de lanche.`,
+    `<b>Pipoca</b> deve ser evitada para menores de 2 anos por risco de engasgo.`,
+    `Alimentos com glúten só precisam ser retirados se houver doença celíaca ou outra condição ligada ao glúten.`,
+    `<b>Pão pode ser processado ou ultraprocessado.</b> Pão de forma, pão sovado e bisnaguinha costumam ser ultraprocessados e não devem ser oferecidos. Pães com farinha, água, sal e fermento podem entrar em pequenas quantidades. Até o pão francês pode ser feito com mistura pronta: pergunte na padaria quais ingredientes são usados.`]},
+
+{id:'g7', row:'grupos', e:'🍠', c:'mint', t:'Raízes, legumes e verduras', s:'A vitamina colorida',
+ intro:`Batata, mandioca, inhame, cará, batata-doce, abóbora, cenoura, couve, brócolis, espinafre e muitos outros.`,
+ p:[`<b>Raízes e tubérculos</b> dão energia, podem entrar no lugar ou junto dos cereais, e são aceitos por quase todo mundo.`,
+    `<b>Legumes e verduras</b> trazem vitaminas, minerais e fibras. A vitamina A está nos vegetais alaranjados e nos folhosos verde-escuros, que também têm ferro.`,
+    `Podem ser cozidos, assados ou, com o tempo, crus e ralados ou em tirinhas para a criança pegar com as mãos.`,
+    `Se só a criança come legumes e o resto da família não, com o tempo ela percebe e começa a recusar. Comer junto ensina mais do que qualquer conversa.`]},
+
+{id:'g8', row:'grupos', e:'🍓', c:'pink', t:'Frutas', s:'Melhor inteira do que em suco',
+ intro:`Fibras, vitaminas e minerais, e um doce que não precisa de açúcar.`,
+ p:[`Ofereça raspadas, amassadas, em pedaços, cozidas ou assadas, sem açúcar.`,
+    `<b>Suco:</b> até 1 ano, não oferecer. De 1 a 3 anos, no máximo 120 mL por dia, natural e sem açúcar, de preferência no fim da refeição.`,
+    `A fruta tem fibras, estimula a mastigação e não precisa de açúcar adicionado.`,
+    `<b>Açaí:</b> a polpa precisa de cuidados de higiene e branqueamento ou pasteurização para evitar a Doença de Chagas. O açaí de sorveteria e lanchonete é adoçado e não é para menores de 2 anos.`]},
+
+{id:'g9', row:'grupos', e:'🍳', c:'coral', t:'Carnes e ovos', s:'Ferro, zinco e vitamina B12',
+ intro:`Bovina, suína, aves, peixes, frutos do mar, miúdos e ovos.`,
+ p:[`<b>Nunca crus ou mal passados.</b> Cozidos, refogados ou ensopados ficam mais úmidos e fáceis de comer.`,
+    `O fígado é rico em ferro e vitamina A.`,
+    `Cuidado com espinhas: escolha peixes com poucas espinhas e confira de novo antes de servir.`,
+    `Ovos podem ser cozidos (7 a 8 minutos depois de começar a ferver), mexidos, pochê ou em omelete. Carne de porco, peixe e clara de ovo podem ser oferecidos: não são causa de alergia.`]},
+
+{id:'g10', row:'grupos', e:'🧀', c:'sky', t:'Leite, queijos e castanhas', s:'E as ervas que dão sabor',
+ intro:`Alimentos com cálcio, proteína e boas gorduras.`,
+ p:[`<b>Leite e queijos:</b> quem é amamentado não precisa de leite de vaca nem fórmula. Derivados podem entrar como ingredientes de receitas a partir dos 6 meses. Evite café com leite antes dos 2 anos, por causa da cafeína.`,
+    `<b>Chás</b> de camomila, erva-cidreira e hortelã podem ser oferecidos a partir dos 6 meses, sem açúcar e sem substituir refeições. Café, erva-mate, chá verde e chá preto não são recomendados para crianças.`,
+    `<b>Castanhas e amendoim</b> inteiros podem engasgar. Triture ou pique bem e use como ingrediente. Nunca com sal ou açúcar.`,
+    `<b>Ervas e temperos naturais</b> (cebola, alho, salsa, coentro, cominho, orégano, cúrcuma) dão sabor sem precisar de sal em excesso.`]},
+
+{id:'g11', row:'grupos', e:'💧', c:'sky', t:'Água', s:'A bebida da sede',
+ intro:`Quando entram outros alimentos além do leite materno, a água entra também.`,
+ p:[`Ofereça água nos intervalos entre as refeições. Deixe um copo ou garrafinha tampada ao alcance.`,
+    `Em vez disso, é comum oferecer água de coco, suco, refresco, refrigerante ou chá adoçado. Isso acostuma a criança a matar a sede só com sabor doce e aumenta o risco de excesso de peso, cárie e diabetes.`,
+    `<b>Tratar a água:</b> onde não há água tratada, filtre e use hipoclorito de sódio a 2,5%, 2 gotas para cada litro, espere 30 minutos e use em até 24 horas. Sem hipoclorito, filtre e ferva por 5 minutos depois das primeiras bolhas.`]},
+
+{id:'g12', row:'grupos', e:'🥬', c:'mint', t:'Ferro e vitamina A', s:'Para prevenir deficiências',
+ intro:`Crianças pequenas correm mais risco de ter falta desses dois nutrientes.`,
+ p:[`<b>Ferro:</b> carnes, feijão, fígado, ovo e verduras verde-escuras (espinafre, caruru, chicória, jambu, taioba, bertalha).`,
+    `O ferro de origem vegetal é mais aproveitado quando a refeição inclui vitamina C: laranja, abacaxi, acerola, goiaba, manga, caju, limão, mamão, tangerina e outras frutas.`,
+    `<b>Vitamina A:</b> fígado, ovo, legumes alaranjados (abóbora, cenoura), verduras verde-escuras e frutas como mamão e manga.`]},
+
+/* ---------- mesa ---------- */
+{id:'m1', row:'mesa', e:'😋', c:'coral', t:'Fome e saciedade', s:'O bebê sabe a hora de parar',
+ intro:`Antes de falar, o bebê se expressa com sons, risadas, choro e movimentos.`,
+ p:[`Observe os sinais e responda com carinho: ofereça comida quando ele mostrar fome e pare quando mostrar que está satisfeito.`,
+    `Coloque pouco no prato e veja a aceitação. Quer mais? Sirva um pouco mais. Não quer? Pare.`,
+    `Respeitar esses sinais é a base para uma relação saudável com a comida pelo resto da vida.`,
+    `A melhor maneira de saber se a quantidade está boa é acompanhar o <b>crescimento</b> na curva da Caderneta da Criança.`],
+ tip:`No começo, é normal comer pouco, só provar. O leite materno ainda é o principal alimento.`},
+
+{id:'m2', row:'mesa', e:'👀', c:'mint', t:'Conversa à mesa', s:'Sem telas, com olho no olho',
+ intro:`A relação da criança com a comida leva tempo e se constrói junto.`,
+ p:[`Coma junto, com prazer, elogie a comida, converse sobre o que está no prato e sorria. Isso incentiva a criança a gostar de comer.`,
+    `Evite alimentar enquanto ela anda e brinca pela casa.`,
+    `<b>Televisão, celular e tablet</b> distraem, e a criança come no automático, às vezes até em excesso, o que pode atrapalhar a percepção de fome e saciedade.`,
+    `A recomendação é que menores de 2 anos não tenham acesso a telas. Parques, praças e áreas verdes estimulam o corpo e os sentidos.`]},
+
+{id:'m3', row:'mesa', e:'🌈', c:'sun', t:'O prato colorido', s:'Um de cada grupo',
+ intro:`Sempre que possível, monte o prato com um alimento de cada grupo.`,
+ p:[`<b>Feijões</b> + <b>cereais ou raízes e tubérculos</b> + <b>carnes ou ovos</b> + <b>legumes e verduras</b> (pode ter mais de um).`,
+    `Separe os alimentos no prato para a criança conhecer cada gosto e cada textura.`,
+    `Complete com um pedacinho de fruta, junto ou logo depois. A vitamina C ajuda a aproveitar o ferro.`,
+    `Ao longo do dia e da semana, varie dentro de cada grupo e prefira alimentos da safra, que são mais saborosos, nutritivos e baratos.`,
+    `<b>Lanches:</b> a partir dos 6 meses, fruta no meio da manhã e da tarde. Após 1 ano, pode alternar com cereais, raízes ou legumes, se for hábito da família.`]},
+
+{id:'m4', row:'mesa', e:'🥣', c:'pink', t:'Textura certa', s:'Do amassadinho ao pedaço',
+ intro:`A comida começa amassada com garfo, depois fica picada, raspada ou desfiada.`,
+ p:[`<b>Não ofereça comida líquida</b> nem use liquidificador, mixer ou peneira. Criança que fica na textura líquida terá mais dificuldade com sólidos, engasgo e ânsia.`,
+    `Sopas, caldos e sucos têm muita água e pouca energia para o que a criança precisa.`,
+    `A consistência certa não escorre da colher, é firme e dá trabalho para mastigar. Isso ajuda no desenvolvimento do rosto, na respiração e na mastigação.`,
+    `Se a comida estiver seca, junte um pouco do caldo do cozimento.`,
+    `Mesmo sem dentes, a criança consegue amassar os alimentos com a gengiva. Comer ainda ajuda os dentes a nascer.`]},
+
+{id:'m5', row:'mesa', e:'🚫', c:'grape', t:'Sem açúcar e sem mel', s:'Até os 2 anos',
+ intro:`Frutas, bebidas e preparações não devem ser adoçadas com nenhum tipo de açúcar.`,
+ p:[`Isso inclui açúcar branco, mascavo, cristal, demerara, de coco, xarope de milho, mel, melado e rapadura.`,
+    `Bolos, biscoitos, doces e geleias caseiros com açúcar também ficam de fora.`,
+    `O açúcar aumenta a chance de ganho excessivo de peso, diabetes, hipertensão e cárie, e quem se acostuma com o muito doce pode ter mais dificuldade de aceitar legumes e verduras.`,
+    `<b>Mel</b> tem os mesmos componentes do açúcar e, além disso, pode ter a bactéria associada ao botulismo, uma doença séria para menores de 1 ano.`]},
+
+{id:'m6', row:'mesa', e:'🧂', c:'sun', t:'Sal e temperos', s:'A comida da família serve',
+ intro:`A criança pode e deve comer a comida da família, desde que ela seja preparada com pouco óleo, temperos naturais e o mínimo de sal.`,
+ p:[`Cebola, alho, salsa, coentro e outras ervas e especiarias dão sabor.`,
+    `<b>Medida de referência:</b> uma família de quatro pessoas que cozinha todo dia em casa deveria levar pelo menos 2 meses e meio para usar 1 kg de sal.`,
+    `Temperos em cubo, sachê ou líquido têm muito sódio e não devem ser usados, principalmente para crianças.`,
+    `Na prática, a comida da criança não precisa ser outra: basta mudar a textura, amassando, cortando menor ou desfiando.`]},
+
+{id:'m7', row:'mesa', e:'🪑', c:'sky', t:'Posição, utensílios e higiene', s:'Pequenos cuidados que protegem',
+ intro:`A refeição é mais tranquila quando a criança está confortável e segura.`,
+ p:[`<b>Posição:</b> sentada, postura reta, sem estar inclinada para trás e sem risco de queda, com os braços livres. Quem oferece se senta de frente, na mesma altura.`,
+    `<b>Utensílios:</b> a colher cabe na boca da criança, líquidos em copo, nada de muitos detalhes que dificultem a limpeza. Não é preciso comprar utensílios especiais.`,
+    `<b>Mãos limpas</b> de quem prepara, de quem oferece e da criança, antes de comer.`,
+    `<b>Temperatura:</b> prove a comida com uma colher diferente da colher da criança. Para esfriar, mexa com a colher, sem soprar.`,
+    `Deixe a criança tocar, cheirar e explorar os alimentos. Um pouco de bagunça faz parte, e em pouco tempo ela estará comendo sozinha.`]},
+
+{id:'m8', row:'mesa', e:'🙈', c:'coral', t:'Quando o bebê não aceita', s:'Persistir com paciência',
+ intro:`Careta não quer dizer que não gostou: pode ser só um sabor novo.`,
+ p:[`Algumas crianças precisam provar um alimento <b>mais de oito vezes</b> até gostar.`,
+    `Se recusar, não desista. Espere alguns dias e ofereça preparado de outra forma.`,
+    `Dentes nascendo, separação da mãe por longos períodos e doenças podem diminuir a aceitação por um tempo.`,
+    `Se a recusa for frequente e atrapalhar o crescimento, procure a unidade de saúde.`]},
+
+{id:'m9', row:'mesa', e:'⏰', c:'mint', t:'Rotina e fezes', s:'O que é normal',
+ intro:`Intervalos regulares entre as refeições, sem rigidez de horário, ajudam a criar bons hábitos.`,
+ p:[`Evite beliscar entre as refeições para que o apetite apareça na hora de comer.`,
+    `Quando a alimentação muda, as fezes ficam mais parecidas com as dos adultos. Pedaços de feijão, legumes e frutas nas fezes são normais, por causa das fibras.`,
+    `Água várias vezes ao dia ajuda o intestino a funcionar bem.`]},
+
+{id:'m10', row:'mesa', e:'🥫', c:'grape', t:'Papinha industrializada', s:'Por que não é recomendada',
+ intro:`As papinhas de pote não são indicadas para as crianças.`,
+ p:[`A textura não favorece a mastigação.`,
+    `Os alimentos vêm misturados no mesmo pote, o que dificulta perceber cada sabor.`,
+    `Não ajudam a criança a se acostumar com o tempero da casa nem com os alimentos da sua região.`,
+    `As vitaminas e minerais dos alimentos naturais são mais bem aproveitados do que os adicionados nas papinhas.`]},
+
+/* ---------- cozinha ---------- */
+{id:'c1', row:'cozinha', e:'👩‍🍳', c:'coral', t:'Por que cozinhar em casa?', s:'Tarefa de toda a família',
+ intro:`Quem cozinha sabe o que está comendo: escolhe ingredientes e jeito de fazer.`,
+ p:[`Cozinhar promove saúde, convivência, preserva a cultura e protege o ambiente.`,
+    `Não precisa ser tarefa só da mãe ou das mulheres da casa. Quando todos participam, ninguém fica sobrecarregado.`,
+    `Se você não sabe cozinhar, converse com familiares, vizinhos e feirantes, peça receitas e comece. Cozinhar se aprende fazendo.`,
+    `A chegada de uma criança é uma oportunidade de melhorar a alimentação de todos.`,
+    `Leite de vaca e derivados podem entrar, depois dos 6 meses, em pequenas quantidades como ingredientes de receitas (como purê de batata), mas não como uma refeição antes dos 9 meses.`]},
+
+{id:'c2', row:'cozinha', e:'🛒', c:'sun', t:'Planejando as compras', s:'Da lista ao armazenamento',
+ intro:`Organizar as refeições da semana facilita a vida de quem cozinha.`,
+ p:[`Prefira alimentos <b>da estação</b>, da sua região, e de produção agroecológica ou orgânica quando possível: costumam ser mais frescos, saborosos e baratos.`,
+    `Deixe papel e caneta à mão, confira geladeira e armários antes de ir e não vá ao mercado com fome.`,
+    `<b>Na hora:</b> observe a limpeza do lugar e a validade. Frutas e legumes sem partes estragadas ou mofadas. Carnes sem cor escurecida ou esverdeada, sem cheiro ruim. Embalagens sem rasgos, estufamento, amassados ou ferrugem.`,
+    `Peixe fresco deve estar refrigerado, com escamas aderidas, guelras úmidas de rosa a vermelho intenso e olhos brilhantes.`,
+    `Mesmo que não haja orgânicos, comida in natura continua sendo a melhor escolha. Trocar por ultraprocessados não reduz os resíduos de agrotóxicos, que também estão presentes neles.`]},
+
+{id:'c3', row:'cozinha', e:'🧼', c:'mint', t:'Higiene na cozinha', s:'Quatro cuidados que protegem',
+ intro:`São quatro aspectos: qualidade da água, mãos e antebraços, utensílios e superfícies, e higienização dos alimentos.`,
+ p:[`<b>Água:</b> da rede pública, basta filtrar. Sem tratamento, filtre e trate como explicado em <i>Água</i>. Para o cozimento, basta a água filtrada.`,
+    `<b>Mãos:</b> antes de cozinhar e de oferecer comida, lave mãos e antebraços com água e sabão e seque com papel ou toalha limpa.`,
+    `<b>Utensílios e superfícies:</b> lave e enxágue fogão, bancada, mesa, pia, talheres e potes. Panos de prato e esponjas podem contaminar: mantenha as esponjas secas e troque uma vez por semana. Evite secar a louça com pano.`,
+    `<b>Alimentos:</b> higienizar não é só lavar. Retire sujeiras e partes estragadas, lave e desinfete o que for comido cru ou com casca.`]},
+
+{id:'c4', row:'cozinha', e:'🥒', c:'sky', t:'Higienizando frutas e verduras', s:'Solução clorada',
+ intro:`Pode ser feita com água sanitária, hipoclorito de sódio ou produtos próprios para desinfetar alimentos.`,
+ p:[`<b>Água sanitária:</b> só serve a que contém apenas água e hipoclorito de sódio (1,0 a 2,5%). Marcas com alvejante ou perfume não podem ser usadas. Leia o rótulo.`,
+    `<b>Com 1,0% de hipoclorito:</b> 2 colheres de sopa para cada litro de água própria para consumo. <b>Com 2,5%:</b> 1 colher de sopa para cada litro.`,
+    `<b>Produtos para desinfetar alimentos</b> (líquidos ou em comprimidos) devem ser usados conforme o rótulo. Desconfie dos que não têm rótulo.`,
+    `Depois, os alimentos podem ser guardados. Folhas bem secas duram mais em potes fechados.`],
+ warn:`Siga o passo a passo e o tempo indicados no rótulo do produto escolhido e enxágue bem os alimentos depois.`},
+
+{id:'c5', row:'cozinha', e:'❄️', c:'sky', t:'Guardar, congelar e sobras', s:'Quanto tempo dura?',
+ intro:`Cozinhar uma quantidade maior e guardar bem poupa tempo nos dias corridos.`,
+ p:[`<b>Geladeira:</b> carnes cruas, carnes cozidas e comida caseira pronta, 3 dias. Pescado cozido e carne crua temperada, 1 dia.`,
+    `<b>Congelador:</b> comida caseira pronta, 10 dias. <b>Freezer:</b> comida pronta e carnes cruas, 30 dias.`,
+    `Guarde em potes pequenos, de preferência de vidro, já na porção da criança. Só descongele o que for consumir, <b>na geladeira</b>, nunca em temperatura ambiente. Não volte ao congelador o que já descongelou (carne crua descongelada pode ser congelada de novo se for cozida antes).`,
+    `No micro-ondas, prefira prato ou pote de vidro, sem frisos de metal e sem filme PVC.`,
+    `<b>Sobras</b> vão para a geladeira sem esperar esfriar. <b>Restos</b> do prato da criança não são oferecidos de novo.`]},
+
+{id:'c6', row:'cozinha', e:'🍲', c:'coral', t:'Dicas de preparo', s:'Feijão, legumes, carnes, ovos e frutas',
+ intro:`Cozinhar bem é prática. Algumas dicas ajudam muito.`,
+ p:[`<b>Feijão:</b> escolha e lave os grãos, deixe de molho por 8 a 12 horas (descarte a água) e cozinhe em água nova. Refogue os temperos em pouco óleo. Para 1 xícara de feijão cru, use 1 colher rasa de café de sal e 1 colher de sopa rasa de óleo. Amassar alguns grãos engrossa o caldo. Evite carne seca, linguiça e pé de porco.`,
+    `<b>Legumes e verduras:</b> panela comum com pouca água, panela de pressão (3 a 5 minutos), vapor ou forno. Textura macia e cores vivas indicam o ponto.`,
+    `<b>Óleos:</b> em pouca quantidade. Frituras não devem fazer parte das refeições da criança.`,
+    `<b>Carnes:</b> macias são mais aceitas. Retire excesso de gordura e nervos. Temperar com antecedência amacia. Peixe cozinha rápido no vapor, e as espinhas devem ser retiradas antes e conferidas depois.`,
+    `<b>Frutas:</b> as mais maduras ficam ótimas cozidas ou assadas, sem açúcar. Suco de laranja no cozimento deixa mais doce sem adoçar.`,
+    `<b>Atalho:</b> cozinhar tudo numa panela só e amassar uma porção direto no prato da criança com um fio de azeite.`]},
+
+/* ---------- desafios ---------- */
+{id:'d1', row:'desafios', e:'💼', c:'sky', t:'Volta da mãe ao trabalho', s:'Manter a amamentação',
+ intro:`Na maior parte dos casos é possível evitar o desmame precoce e continuar amamentando.`,
+ p:[`Amamentar quando levar ou buscar a criança na creche ou no local onde fica.`,
+    `Amamentar nos intervalos, se o trabalho for perto, e, se possível, alguém levar o bebê ao local de trabalho.`,
+    `Tirar o leite em casa e guardar para ser oferecido na ausência.`,
+    `Tirar e guardar o leite no trabalho ou na creche, quando houver estrutura.`]},
+
+{id:'d2', row:'desafios', e:'🏫', c:'mint', t:'Entrada na creche', s:'Adaptação e conversa',
+ intro:`É um grande momento de socialização, com novas regras, outros utensílios e temperos diferentes.`,
+ p:[`Converse com a equipe sobre hábitos alimentares, preferências, intolerâncias e alergias.`,
+    `Quem deixa o leite retirado deve explicar como armazenar e oferecer, além das demais recomendações do guia.`]},
+
+{id:'d3', row:'desafios', e:'🎒', c:'sun', t:'Rotina diferente', s:'Passeios, festas e casa dos outros',
+ intro:`Fora de casa, é preciso um planejamento especial para evitar ultraprocessados.`,
+ p:[`Enviar os alimentos, pratos e talheres que a criança já usa ajuda a evitar ofertas inadequadas.`,
+    `Refeições em porções individuais podem ir para passeios, festas e consultas.`,
+    `Frutas, legumes crus e frutas secas aguentam um tempo em temperatura ambiente. Para as que escurecem, algumas gotas de limão ajudam.`,
+    `Almoço e jantar vão melhor em bolsa térmica.`]},
+
+{id:'d4', row:'desafios', e:'🏠', c:'pink', t:'Mudanças na família', s:'Separação, perdas, novos irmãos',
+ intro:`Mudanças na estrutura familiar podem mexer com o jeito da criança comer, para melhor ou para pior.`,
+ p:[`Combine as regras de alimentação entre os responsáveis e repasse a todos que cuidam da criança.`,
+    `Perceba os sinais que a criança dá, apoiando e estimulando, sem fortes broncas, sem violência, mas também sem ceder a todos os desejos.`]},
+
+{id:'d5', row:'desafios', e:'🙅', c:'coral', t:'A criança que não quer comer', s:'E não está doente',
+ intro:`A partir do primeiro ano, o ritmo de crescimento desacelera e é comum o apetite diminuir.`,
+ p:[`Muitas vezes o prato vem cheio demais, e o adulto sente que a criança comeu pouco. Observe a quantidade servida.`,
+    `O apetite também cai quando se come entre as refeições, ou quando há sono e irritação na hora de comer.`,
+    `<b>O que ajuda:</b> paciência, respeitar os sinais de saciedade, manter o horário das refeições.`,
+    `<b>O que piora:</b> forçar, não deixar sair da mesa até acabar, brigar, bater, chantagear, oferecer prêmios, presentes ou guloseimas para comer.`,
+    `Para menores de 1 ano, lembre que o leite materno ainda é a principal fonte de energia e de nutrientes.`]},
+
+{id:'d6', row:'desafios', e:'🤒', c:'grape', t:'Criança doente', s:'Comer menos é comum',
+ intro:`Quando a criança está doente, tende a comer menos e a mostrar menos fome.`,
+ p:[`Ofereça o leite materno com mais frequência.`,
+    `Se não for amamentação exclusiva, ofereça água ao longo do dia, principalmente após cada vômito ou diarreia.`,
+    `Flexibilize os horários e alimente com mais frequência, com alimentos in natura ou minimamente processados.`,
+    `Capriche na apresentação do prato e ofereça a consistência que ela preferir.`]},
+
+{id:'d7', row:'desafios', e:'🗣️', c:'sky', t:'Palpites demais', s:'Quando todo mundo opina',
+ intro:`Familiares e amigos dão conselhos que às vezes contradizem as orientações dos profissionais.`,
+ p:[`Compartilhar este conteúdo com toda a família, com quem cuida e com a creche ajuda todos a remarem para o mesmo lado.`,
+    `Na internet, muita gente divulga só a própria experiência ou vende um produto. Confirme com profissionais de confiança ou sites de órgãos do governo.`]},
+
+{id:'d8', row:'desafios', e:'📺', c:'pink', t:'Propaganda de alimentos', s:'Proteger a criança',
+ intro:`A maior parte da publicidade de alimentos é de ultraprocessados e está em todo lugar.`,
+ p:[`Ela aparece na TV, no rádio, em outdoors, rótulos, jogos eletrônicos, sites e redes sociais.`,
+    `Menos telas é a melhor defesa. Parques, praças e áreas verdes são ótimos programas.`,
+    `Antes de ir ao mercado, vá com a criança alimentada, ou leve um lanche saudável, e converse sobre as regras.`]},
+
+{id:'d9', row:'desafios', e:'🌱', c:'mint', t:'Criança vegetariana', s:'Atenção redobrada',
+ intro:`Valem as mesmas regras: amamentação por 2 anos ou mais e só leite materno nos primeiros 6 meses.`,
+ p:[`Carnes e ovos fornecem nutrientes importantes. Sem eles, é preciso mais cuidado ao escolher os alimentos para prevenir deficiências.`,
+    `O acompanhamento de profissionais de saúde é fundamental para monitorar crescimento, orientar a alimentação e indicar suplementação de vitaminas e minerais.`]},
+
+/* ---------- cuidados ---------- */
+{id:'x1', row:'cuidados', e:'🦷', c:'sky', t:'Sorriso saudável', s:'Cuidar da boca desde cedo',
+ intro:`A alimentação e a higiene andam juntas para evitar cárie.`,
+ p:[`Só leite do peito até os 6 meses e bastante fruta, verdura e legume depois.`,
+    `Nada de alimentos e bebidas com açúcar. Evite líquidos (menos a água), principalmente na hora de dormir.`,
+    `Evite comer fora do horário das refeições.`,
+    `Escove os dentes <b>pelo menos 2 vezes ao dia</b>, com fio dental e pasta com flúor, principalmente antes de dormir.`,
+    `<b>Quantidade de pasta:</b> um grão de arroz se a criança ainda não sabe cuspir; um grão de ervilha se já sabe.`]},
+
+{id:'x2', row:'cuidados', e:'☀️', c:'sun', t:'Banho de sol', s:'Vitamina D e brincadeira',
+ intro:`A exposição ao sol é o principal estímulo para o corpo produzir vitamina D, importante para os ossos.`,
+ p:[`É também uma ótima hora de brincar e interagir com a família e com outras crianças.`]},
+
+{id:'x3', row:'cuidados', e:'⚖️', c:'grape', t:'Direitos das famílias', s:'O que a lei garante',
+ intro:`O Brasil tem leis que protegem a alimentação e a saúde das crianças.`,
+ p:[`<b>Licença-maternidade:</b> 120 dias (180 em servidoras públicas e em empresas do Programa Empresa Cidadã), também em casos de adoção.`,
+    `<b>Licença-paternidade:</b> 5 dias, ou 20 dias em empresas do Programa Empresa Cidadã. Deve ser requerida até 2 dias úteis após o nascimento ou a adoção.`,
+    `<b>Pausas para amamentar:</b> até a criança completar 6 meses, a mulher tem direito a 1 hora de descanso por dia, que pode ser dividida em dois períodos de meia hora, ou pode entrar mais tarde ou sair mais cedo.`,
+    `<b>Sala de apoio à amamentação:</b> qualquer empresa pode ter, para retirar e guardar o leite com segurança.`,
+    `<b>Creche:</b> estabelecimentos que empregam mais de 30 mulheres com mais de 16 anos devem ter local apropriado, ou convênio ou auxílio-creche.`,
+    `<b>Alimentação escolar:</b> nas escolas públicas, o PNAE garante cardápios elaborados por nutricionistas, inclusive em creches e pré-escolas.`,
+    `<b>Propaganda:</b> o Código de Defesa do Consumidor proíbe publicidade abusiva que se aproveita da imaturidade da criança.`,
+    `<b>Mulheres que vivem com HIV:</b> a recomendação, após aconselhamento, é não amamentar, e a criança tem direito a receber fórmula infantil pelo menos até os 6 meses.`],
+ tip:`Dúvidas sobre os seus direitos? Procure a unidade de saúde ou a equipe do hospital.`}
+],
+
+crianca: [
+/* ---------- regra ---------- */
+{id:'r1', row:'regra', e:'🏆', c:'sun', t:'A regra de ouro', s:'Comida de verdade em primeiro lugar',
+ intro:`Prefira sempre alimentos in natura ou minimamente processados e preparações feitas em casa a produtos ultraprocessados.`,
+ p:[`Arroz e feijão, frutas, legumes, verduras, ovos, carnes, leite, castanhas e água formam a base de uma alimentação saudável.`,
+    `Use óleo, sal e açúcar em pequenas quantidades, só para temperar e cozinhar.`,
+    `Alimentos processados (como queijos e pães simples) entram em pouca quantidade, como parte de refeições com comida de verdade.`,
+    `Ultraprocessados, melhor evitar.`],
+ tip:`Se você só lembrar de uma coisa deste site, que seja esta.`},
+
+{id:'r2', row:'regra', e:'🧩', c:'mint', t:'Os 4 tipos de alimento', s:'Do natural ao ultraprocessado',
+ intro:`O Guia Alimentar do Brasil separa os alimentos pelo quanto (e para que) foram processados.`,
+ p:[`<b>In natura ou minimamente processados:</b> vêm direto da planta ou do animal, ou só foram limpos, moídos, secos, pasteurizados ou congelados, sem sal, açúcar ou óleo. Exemplos: feijões, arroz, milho, raízes, legumes, verduras, frutas, carnes, ovos, leite, iogurte natural, castanhas sem sal e água. <b>É a base da alimentação da família.</b>`,
+    `<b>Ingredientes culinários:</b> sal, açúcar, óleos, azeite, manteiga e vinagre. Servem para temperar e cozinhar, em pequena quantidade.`,
+    `<b>Processados:</b> alimentos in natura com sal ou açúcar para durar mais, como conservas, queijos e pães com poucos ingredientes. Pouca quantidade e de vez em quando.`,
+    `<b>Ultraprocessados:</b> formulações industriais com muitos ingredientes e aditivos. Evitar.`]},
+
+{id:'r3', row:'regra', e:'🔍', c:'coral', t:'Detetive de rótulos', s:'Como descobrir um ultraprocessado',
+ intro:`A lista de ingredientes conta tudo. O primeiro ingrediente é o que tem em maior quantidade; o último, em menor.`,
+ p:[`Muitos ingredientes, com nomes estranhos ou que você nunca usaria na sua cozinha? Grande chance de ser ultraprocessado.`,
+    `Aditivos costumam aparecer no final da lista: aromas naturais ou artificiais, realçadores de sabor (como glutamato monossódico), corante caramelo, emulsificantes, adoçantes.`,
+    `<b>Exemplo:</b> o macarrão comum tem poucos ingredientes. O instantâneo tem farinha, gordura vegetal, sal, reguladores de acidez, estabilizantes, corante e mais de 10 ingredientes só no tempero. É ultraprocessado.`,
+    `<b>Exemplos:</b> refrigerantes, refrescos em pó e de caixinha, achocolatados, salgadinhos de pacote, biscoitos recheados, bolinhos industrializados, cereais matinais, iogurtes com sabor e tipo petit suisse, nuggets, salsicha, macarrão instantâneo e temperos em cubo.`]},
+
+{id:'r4', row:'regra', e:'🎭', c:'pink', t:'Parece, mas não é', s:'Os disfarces dos ultraprocessados',
+ intro:`Muitos ultraprocessados são vendidos como se fossem opções nutritivas.`,
+ p:[`<b>Parece cereal:</b> biscoitos, barras de cereal, pão doce, pão de forma e bisnaguinha, cereal matinal, macarrão instantâneo, lasanha e pizza prontas.`,
+    `<b>Parece suco:</b> suco em pó, refresco industrializado e néctar.`,
+    `<b>Parece carne:</b> hambúrguer, nuggets, salsicha, salame, linguiça, presunto e empanados prontos.`,
+    `<b>Parece leite:</b> leite aromatizado, achocolatado, bebida láctea adoçada, iogurte com sabor, queijo cheddar e fundido.`,
+    `<b>Parece tempero:</b> caldos industrializados e molhos prontos.`],
+ warn:`Em excesso, esses produtos se associam a obesidade, diabetes, hipertensão, doenças do coração, cárie e câncer.`},
+
+/* ---------- 10 passos ---------- */
+{id:'p1', row:'passos', e:'1️⃣', c:'coral', t:'Passo 1', s:'Comida de verdade como base',
+ intro:`Faça de alimentos in natura e minimamente processados a base da alimentação.`,
+ p:[`Varie ao longo da semana: feijões, cereais, raízes, legumes, verduras, frutas, carnes, ovos, leite e castanhas.`,
+    `Prefira os alimentos da época e da sua região.`]},
+{id:'p2', row:'passos', e:'2️⃣', c:'sun', t:'Passo 2', s:'Óleo, sal e açúcar: pouco',
+ intro:`Use óleos, gorduras, sal e açúcar em pequenas quantidades ao temperar e cozinhar.`,
+ p:[`Ervas, alho, cebola e especiarias dão sabor sem exagerar no sal.`,
+    `<b>Medida de referência:</b> uma família de quatro pessoas que cozinha todo dia em casa deveria levar pelo menos 2 meses e meio para consumir 1 kg de sal.`,
+    `Temperos em cubo, sachê ou líquido têm muito sódio.`]},
+{id:'p3', row:'passos', e:'3️⃣', c:'mint', t:'Passo 3', s:'Processados: com moderação',
+ intro:`Limite o consumo de alimentos processados.`,
+ p:[`Conservas, queijos e pães simples podem entrar como parte de refeições, em pouca quantidade e de vez em quando.`]},
+{id:'p4', row:'passos', e:'4️⃣', c:'sky', t:'Passo 4', s:'Ultraprocessados: evitar',
+ intro:`Evite o consumo de alimentos ultraprocessados.`,
+ p:[`Refrigerantes, salgadinhos, biscoitos recheados, nuggets, macarrão instantâneo e afins competem com a comida de verdade e levam excesso de açúcar, sal, gordura e aditivos.`,
+    `Use o <b>Detetive de rótulos</b> para reconhecê-los.`]},
+{id:'p5', row:'passos', e:'5️⃣', c:'grape', t:'Passo 5', s:'Comer com atenção e companhia',
+ intro:`Coma com regularidade, com atenção, em ambientes apropriados e, sempre que possível, acompanhado.`,
+ p:[`Mesa, sem TV, celular ou tablet. Com a família, é mais gostoso e ensina pelo exemplo.`,
+    `Comer sem prestar atenção leva a comer no automático e, às vezes, em excesso.`]},
+{id:'p6', row:'passos', e:'6️⃣', c:'pink', t:'Passo 6', s:'Compras com variedade',
+ intro:`Faça compras em locais que ofereçam variedade de alimentos in natura ou minimamente processados.`,
+ p:[`Feiras, mercados, hortifrútis e produtores locais costumam ter alimentos mais frescos, baratos e da estação.`,
+    `Planeje a lista, confira o que já tem em casa e não vá com fome.`]},
+{id:'p7', row:'passos', e:'7️⃣', c:'coral', t:'Passo 7', s:'Habilidades culinárias',
+ intro:`Desenvolva, exercite e compartilhe habilidades culinárias.`,
+ p:[`Cozinhar é aprender fazendo e pode ser uma atividade em família.`,
+    `Crianças podem ajudar em tarefas simples e seguras, como lavar verduras, misturar e montar o prato.`]},
+{id:'p8', row:'passos', e:'8️⃣', c:'sun', t:'Passo 8', s:'Tempo para a comida',
+ intro:`Planeje o uso do tempo para dar à alimentação o espaço que ela merece.`,
+ p:[`Organize compras, preparo e armazenamento. Cozinhar uma quantidade maior e guardar porções facilita a semana.`]},
+{id:'p9', row:'passos', e:'9️⃣', c:'mint', t:'Passo 9', s:'Fora de casa, com escolhas boas',
+ intro:`Quando comer fora, dê preferência a locais que servem refeições feitas na hora.`,
+ p:[`Restaurantes por quilo, comida caseira e lanchonetes que servem comida de verdade são melhores do que redes que vendem sobretudo ultraprocessados.`]},
+{id:'p10', row:'passos', e:'🔟', c:'sky', t:'Passo 10', s:'Olho crítico para propagandas',
+ intro:`Seja crítico em relação a informações, orientações e mensagens sobre alimentação veiculadas em propagandas.`,
+ p:[`Publicidade existe para vender. Desconfie de promessas de produtos milagrosos ou de embalagens que se dizem saudáveis.`,
+    `Converse com a criança sobre isso: entender a propaganda também é aprender a se alimentar.`]},
+
+/* ---------- prato ---------- */
+{id:'a1', row:'prato', e:'🌈', c:'sun', t:'O prato colorido', s:'Um de cada grupo',
+ intro:`Sempre que possível, monte o prato com um alimento de cada grupo.`,
+ p:[`<b>Feijões</b> + <b>cereais ou raízes e tubérculos</b> + <b>carnes ou ovos</b> + <b>legumes e verduras</b> (pode ter mais de um).`,
+    `Complete com uma fruta, junto ou logo depois. A vitamina C ajuda a aproveitar o ferro.`,
+    `Varie dentro de cada grupo e prefira alimentos da safra: mais saborosos, nutritivos e baratos.`,
+    `Nos lanches, frutas são sempre ótimas. Cereais, raízes e legumes também entram, conforme o costume da família.`]},
+
+{id:'a2', row:'prato', e:'🫘', c:'coral', t:'Feijões e cereais', s:'A dupla da cultura brasileira',
+ intro:`Feijões, ervilha, lentilha, grão-de-bico, arroz, milho, trigo, aveia e massas.`,
+ p:[`<b>Feijões</b> têm proteínas, fibras, ferro, zinco e vitaminas do complexo B. Deixar de molho por 8 a 12 horas ajuda a evitar gases.`,
+    `<b>Cereais</b> dão carboidratos, fibras e minerais, principalmente os integrais.`,
+    `<b>Pão pode ser processado ou ultraprocessado.</b> Pão de forma, sovado e bisnaguinha costumam ser ultraprocessados. Pães com farinha, água, sal e fermento podem entrar em pequena quantidade. O pão caseiro é a melhor opção.`]},
+
+{id:'a3', row:'prato', e:'🥕', c:'mint', t:'Raízes, legumes e verduras', s:'Cor, fibra e vitamina',
+ intro:`Batata, mandioca, inhame, cenoura, abóbora, couve, brócolis, espinafre e muitos outros.`,
+ p:[`<b>Raízes e tubérculos</b> dão energia e podem substituir ou complementar os cereais.`,
+    `<b>Legumes e verduras</b> trazem vitaminas, minerais e fibras. A vitamina A está nos alaranjados e nos folhosos verde-escuros, que também têm ferro.`,
+    `Podem ser cozidos, assados, no vapor, ou crus (bem higienizados).`,
+    `Quando a família toda come, a criança tende a aceitar melhor.`]},
+
+{id:'a4', row:'prato', e:'🍓', c:'pink', t:'Frutas', s:'A sobremesa que a natureza faz',
+ intro:`Fibras, vitaminas e minerais, com doce natural.`,
+ p:[`Prefira a fruta inteira ao suco: tem mais fibras e estimula a mastigação.`,
+    `Frutas cozidas ou assadas, sem açúcar, também ficam ótimas.`,
+    `<b>Produtos que parecem suco</b> (em pó, refresco, néctar) são ultraprocessados.`]},
+
+{id:'a5', row:'prato', e:'🍳', c:'sun', t:'Carnes, ovos, leite e queijos', s:'Proteínas, ferro e cálcio',
+ intro:`Carnes, aves, peixes, ovos, leite, iogurte natural e queijos.`,
+ p:[`Carnes e ovos <b>nunca crus ou mal passados</b>. Carnes e peixes dão proteína, ferro, zinco e vitamina B12. O fígado é rico em ferro e vitamina A.`,
+    `Ovos cozidos: de 7 a 8 minutos depois de começar a ferver.`,
+    `<b>Leite e queijos</b> dão proteína, gordura boa, cálcio e vitamina A. Iogurte natural sem açúcar é ótimo. Os com sabor ou açúcar são ultraprocessados.`]},
+
+{id:'a6', row:'prato', e:'🥜', c:'grape', t:'Castanhas, ervas e temperos', s:'Sabor sem exagero',
+ intro:`Castanhas, amendoim, ervas frescas e secas, especiarias, cebola, alho e limão.`,
+ p:[`<b>Castanhas e amendoim</b> sem sal e sem açúcar trazem boas gorduras, minerais e antioxidantes.`,
+    `<b>Ervas e temperos naturais</b> permitem comer com muito sabor usando menos sal.`]},
+
+{id:'a7', row:'prato', e:'💧', c:'sky', t:'Água, a bebida da sede', s:'Sem açúcar escondido',
+ intro:`Para matar a sede, a melhor bebida é água.`,
+ p:[`Refrigerantes, refrescos, sucos de caixinha, chás adoçados e energéticos têm açúcar, sódio e aditivos.`,
+    `Habituar a criança a matar a sede só com bebidas doces aumenta o risco de excesso de peso, cárie e diabetes.`,
+    `Refrigerantes de cola e bebidas à base de mate, chá preto ou guaraná contêm cafeína, que pode deixar a criança agitada e atrapalha o aproveitamento de ferro e cálcio.`,
+    `Onde a água não é tratada, filtre e use hipoclorito de sódio 2,5% (2 gotas por litro, esperar 30 minutos, usar em 24 horas) ou, sem hipoclorito, filtre e ferva por 5 minutos.`]},
+
+{id:'a8', row:'prato', e:'🥬', c:'mint', t:'Ferro e vitamina A', s:'Para crescer forte',
+ intro:`Dois nutrientes que crianças pequenas precisam receber com regularidade.`,
+ p:[`<b>Ferro:</b> carnes, feijão, fígado, ovo e verduras verde-escuras.`,
+    `O ferro de origem vegetal é mais aproveitado com vitamina C na mesma refeição: laranja, abacaxi, acerola, goiaba, manga, caju, limão, mamão, tangerina.`,
+    `<b>Vitamina A:</b> fígado, ovo, legumes alaranjados, verduras verde-escuras e frutas como mamão e manga.`]},
+
+/* ---------- mesa ---------- */
+{id:'t1', row:'mesa', e:'📵', c:'coral', t:'Comer com atenção', s:'Sem tela, com conversa',
+ intro:`A refeição é um momento para aprender, trocar afeto e criar boas lembranças.`,
+ p:[`Comer junto, com prazer, elogiar a comida e conversar sobre o prato incentiva a criança.`,
+    `Evite comer andando pela casa ou com TV, celular, computador ou tablet.`,
+    `Quando a atenção está na tela, a criança come no automático, às vezes em excesso, e pode perder a percepção de fome e saciedade.`]},
+
+{id:'t2', row:'mesa', e:'😋', c:'sun', t:'Fome e saciedade', s:'O corpo sabe',
+ intro:`Respeitar a fome e a saciedade ajuda a ter uma boa relação com a comida.`,
+ p:[`Sirva porções pequenas. Se a criança quiser mais, repita.`,
+    `Se disse que acabou, pare de oferecer.`,
+    `O apetite varia ao longo do dia e das fases do crescimento. Se o crescimento está adequado nas consultas, é sinal de que a alimentação está bem.`]},
+
+{id:'t3', row:'mesa', e:'🙅', c:'pink', t:'Quando a criança não quer comer', s:'E não está doente',
+ intro:`É comum o apetite diminuir em algumas fases, e a criança também passa a prestar mais atenção ao que está no prato.`,
+ p:[`<b>O que ajuda:</b> paciência, horários regulares das refeições, servir porções pequenas e respeitar a saciedade.`,
+    `<b>O que piora:</b> forçar, não deixar sair da mesa, brigar, bater, chantagear, oferecer prêmios, presentes ou guloseimas para comer.`,
+    `Beliscar entre as refeições, sono e irritação também diminuem o apetite.`,
+    `Algumas crianças precisam provar um alimento mais de oito vezes até gostar. Insista com paciência, preparando de outras formas.`]},
+
+{id:'t4', row:'mesa', e:'👨‍👩‍👧', c:'mint', t:'A mesma comida da família', s:'Todo mundo no mesmo prato',
+ intro:`Se a alimentação da família é saudável, a criança não precisa de comida separada.`,
+ p:[`Facilita o dia a dia de quem cozinha e acostuma a criança com os sabores de casa.`,
+    `Criança imita o que vê: se os adultos comem legumes com prazer, ela tende a copiar.`]},
+
+{id:'t5', row:'mesa', e:'📺', c:'grape', t:'Propaganda e criança', s:'Como proteger',
+ intro:`Ultraprocessados estão em comerciais, rótulos, jogos, sites e redes sociais.`,
+ p:[`Reduza o tempo de telas e converse sobre o que as propagandas prometem.`,
+    `Antes de ir ao mercado, vá com a criança alimentada ou leve um lanche saudável, e combine as regras antes.`,
+    `A lei brasileira proíbe publicidade abusiva que se aproveita da imaturidade da criança.`]},
+
+/* ---------- cozinha ---------- */
+{id:'k1', row:'cozinha', e:'🧼', c:'mint', t:'Higiene na cozinha', s:'Quatro cuidados que protegem',
+ intro:`Qualidade da água, mãos e antebraços, utensílios e superfícies, e higienização dos alimentos.`,
+ p:[`<b>Água:</b> da rede pública, basta filtrar. Sem tratamento, filtre e trate com hipoclorito ou ferva.`,
+    `<b>Mãos:</b> antes de cozinhar e de comer, lave mãos e antebraços com água e sabão. Ensine a criança a fazer o mesmo.`,
+    `<b>Utensílios e superfícies:</b> lave e enxágue. Panos de prato e esponjas contaminam: mantenha esponjas secas e troque uma vez por semana. Deixe a louça secar sozinha.`,
+    `<b>Alimentos:</b> higienizar não é só lavar. Tire sujeiras e partes estragadas, lave e desinfete o que for comido cru ou com casca.`]},
+
+{id:'k2', row:'cozinha', e:'🥒', c:'sky', t:'Higienizando frutas e verduras', s:'Solução clorada',
+ intro:`Pode ser feita com água sanitária, hipoclorito de sódio ou produtos próprios para desinfetar alimentos.`,
+ p:[`<b>Água sanitária:</b> só a que contém apenas água e hipoclorito de sódio (1,0 a 2,5%). Marcas com alvejante ou perfume não servem.`,
+    `<b>Com 1,0%:</b> 2 colheres de sopa por litro de água própria para consumo. <b>Com 2,5%:</b> 1 colher de sopa por litro.`,
+    `<b>Produtos para desinfetar alimentos</b> devem ser usados conforme o rótulo. Desconfie dos sem rótulo.`],
+ warn:`Siga o passo a passo e o tempo indicados no rótulo do produto escolhido e enxágue bem os alimentos depois.`},
+
+{id:'k3', row:'cozinha', e:'🛒', c:'sun', t:'Compras inteligentes', s:'Da lista à geladeira',
+ intro:`Planejar economiza tempo e dinheiro e evita desperdício.`,
+ p:[`Prefira alimentos da estação, da região e, quando possível, orgânicos ou agroecológicos.`,
+    `Observe limpeza do local e validade. Frutas e legumes sem partes estragadas, carnes sem cor escurecida, esverdeada ou cheiro ruim, embalagens íntegras.`,
+    `Ao chegar, organize os alimentos de maneira visível para não estragar nada escondido no fundo da geladeira.`,
+    `Mesmo sem orgânicos, comida in natura continua sendo a melhor escolha. Trocar por ultraprocessados não reduz os resíduos de agrotóxicos.`]},
+
+{id:'k4', row:'cozinha', e:'❄️', c:'sky', t:'Guardar, congelar e sobras', s:'Quanto tempo dura?',
+ intro:`Cozinhar uma quantidade maior e guardar bem poupa tempo nos dias corridos.`,
+ p:[`<b>Geladeira:</b> carnes cruas, cozidas e comida caseira pronta, 3 dias. Pescado cozido e carne crua temperada, 1 dia.`,
+    `<b>Congelador:</b> comida pronta, 10 dias. <b>Freezer:</b> comida pronta e carnes cruas, 30 dias.`,
+    `Descongele na geladeira, nunca em temperatura ambiente, e não recongele o que já descongelou (carne crua pode ser recongelada se for cozida antes).`,
+    `No micro-ondas, prefira vidro, sem frisos de metal e sem filme PVC.`,
+    `<b>Sobras</b> vão para a geladeira sem esperar esfriar. <b>Restos</b> do prato de alguém não voltam para outra refeição.`]},
+
+{id:'k5', row:'cozinha', e:'🍲', c:'coral', t:'Dicas de preparo', s:'Feijão, legumes, carnes e ovos',
+ intro:`Cozinhar se aprende cozinhando. Algumas dicas ajudam.`,
+ p:[`<b>Feijão:</b> molho de 8 a 12 horas (descarte a água), cozimento em água nova e tempero refogado em pouco óleo. Para 1 xícara de feijão cru, use 1 colher rasa de café de sal e 1 colher de sopa rasa de óleo. Evite carne seca, linguiça e pé de porco.`,
+    `<b>Legumes e verduras:</b> panela comum com pouca água, panela de pressão, vapor ou forno. Textura macia e cores vivas indicam o ponto.`,
+    `<b>Carnes:</b> peixes cozinham rápido no vapor, e as espinhas devem ser retiradas antes. Carne temperada com antecedência fica mais macia.`,
+    `<b>Frituras</b> não são o melhor caminho: usam óleo em excesso e geram substâncias que fazem mal.`,
+    `<b>Atalhos:</b> deixe alho e cebola picados na geladeira, ferva água antes de começar, cozinhe em maior quantidade e compartilhe tarefas.`]},
+
+/* ---------- dia a dia ---------- */
+{id:'v1', row:'dia', e:'🎒', c:'sun', t:'Lancheira e passeios', s:'Planejar antes de sair',
+ intro:`Fora de casa, é preciso um planejamento especial para evitar ultraprocessados.`,
+ p:[`Frutas, legumes crus e frutas secas aguentam um tempo em temperatura ambiente. Para as que escurecem, algumas gotas de limão ajudam.`,
+    `Refeições em porções individuais podem ir para passeios, festas e consultas, e o almoço vai melhor em bolsa térmica.`]},
+
+{id:'v2', row:'dia', e:'🏫', c:'mint', t:'Alimentação na escola', s:'Direito da criança',
+ intro:`Nas escolas públicas, o Programa Nacional de Alimentação Escolar (PNAE) garante alimentação adequada e saudável.`,
+ p:[`Os cardápios são elaborados por nutricionistas, respeitam a cultura, as tradições e os hábitos locais e atendem às necessidades nutricionais por faixa etária e estado de saúde.`,
+    `Vale conversar com a escola sobre preferências, alergias e intolerâncias.`]},
+
+{id:'v3', row:'dia', e:'🦷', c:'sky', t:'Sorriso saudável', s:'Comida e escova trabalham juntas',
+ intro:`Alimentação e higiene andam juntas para evitar cárie.`,
+ p:[`Evite alimentos e bebidas com açúcar e evite comer fora do horário das refeições.`,
+    `Escove os dentes <b>pelo menos 2 vezes ao dia</b>, com fio dental e pasta com flúor, principalmente antes de dormir.`]},
+
+{id:'v4', row:'dia', e:'🗣️', c:'pink', t:'Palpites demais', s:'Em quem confiar?',
+ intro:`É comum receber conselhos conflitantes de família, amigos e internet.`,
+ p:[`Confirme informações com profissionais de saúde ou em sites de órgãos do governo.`,
+    `Muita gente na internet divulga só a própria experiência ou vende um produto.`,
+    `Quando todos os cuidadores da criança seguem a mesma direção, tudo fica mais fácil.`]}
+]
+};
+
+/* =========================================================
+   ESTADO E UTILIDADES
+   ========================================================= */
+const FRUITS = ['🍓','🍌','🍊','🍇','🍉','🍍','🥭','🍐','🍎','🍑','🍒','🥝','🍋'];
+const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = (s, r=document) => r.querySelector(s);
+const state = {profile:null, stage:null, list:[], current:null, viewed:new Set(), busy:false};
+const PROFILE_INFO = {
+  bebe:    {name:'Até 2 anos',     emoji:'👶', color:'sun'},
+  crianca: {name:'2 anos ou mais', emoji:'🧒', color:'sky'}
+};
+const HERO = {
+  bebe: {color:'mint', e:'🥑', tag:'Perfil até 2 anos', t:'Primeiros sabores',
+         d:'Amamentação, primeiras colheradas e o jeito de fazer a refeição virar um momento gostoso, tudo do seu jeito e no seu ritmo.',
+         a:['Ver o momento do meu bebê','etapa'], b:['Leite materno','leite']},
+  crianca: {color:'coral', e:'🥦', tag:'Perfil 2 anos ou mais', t:'Prato cheio de cor',
+         d:'Comida de verdade, mesa em família e escolhas que cabem na rotina. Do mercado à mesa, em passos simples.',
+         a:['Começar pela regra de ouro','regra'], b:['Os 10 passos','passos']}
+};
+
+const norm = s => s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const stripTags = s => s.replace(/<[^>]*>/g,' ');
+function haystack(c){ return norm(stripTags([c.t,c.s,c.intro,(c.p||[]).join(' '),c.tip||'',c.warn||''].join(' '))); }
+CARDS.bebe.forEach(c=>c._h=haystack(c));
+CARDS.crianca.forEach(c=>c._h=haystack(c));
+
+/* =========================================================
+   AMBIENTE FLUTUANTE
+   ========================================================= */
+const sky = $('#sky');
+(function buildSky(){
+  const n = reduce ? 6 : 14;
+  for(let i=0;i<n;i++){
+    const f = document.createElement('div');
+    f.className = 'floater';
+    const size = 26 + Math.random()*40;
+    f.style.setProperty('--x', (Math.random()*96)+'%');
+    f.style.setProperty('--y', (Math.random()*92)+'%');
+    f.style.setProperty('--s', size+'px');
+    f.style.setProperty('--depth', (size/40*8).toFixed(1));
+    f.style.setProperty('--d', (4+Math.random()*5).toFixed(1)+'s');
+    f.style.setProperty('--delay', (-Math.random()*6).toFixed(1)+'s');
+    f.style.opacity = (.55+Math.random()*.4).toFixed(2);
+    const s = document.createElement('span');
+    s.textContent = FRUITS[i % FRUITS.length];
+    f.appendChild(s);
+    sky.appendChild(f);
+  }
+  if(!reduce){
+    window.addEventListener('pointermove', e=>{
+      const px = (e.clientX/window.innerWidth - .5)*2;
+      const py = (e.clientY/window.innerHeight - .5)*2;
+      sky.style.setProperty('--px', px.toFixed(3));
+      sky.style.setProperty('--py', py.toFixed(3));
+    }, {passive:true});
+  }
+})();
+
+/* =========================================================
+   EXPLOSÃO DE FRUTINHAS
+   ========================================================= */
+function burst(x, y){
+  if(reduce) return;
+  const ring = document.createElement('div');
+  ring.className = 'ring';
+  ring.style.left = (x-40)+'px'; ring.style.top = (y-40)+'px';
+  ring.style.width = ring.style.height = '80px';
+  document.body.appendChild(ring);
+  ring.animate([
+    {transform:'scale(.2)', opacity:.9},
+    {transform:'scale(4.2)', opacity:0}
+  ], {duration:900, easing:'cubic-bezier(.16,1,.3,1)'}).onfinish = ()=>ring.remove();
+
+  const N = 26;
+  for(let i=0;i<N;i++){
+    const el = document.createElement('div');
+    el.className = 'fruit';
+    el.textContent = FRUITS[Math.floor(Math.random()*FRUITS.length)];
+    const size = 22 + Math.random()*28;
+    el.style.fontSize = size+'px';
+    el.style.left = x+'px'; el.style.top = y+'px';
+    document.body.appendChild(el);
+    const ang = (i/N)*Math.PI*2 + (Math.random()-.5)*.5;
+    const dist = 110 + Math.random()*210;
+    const bx = Math.cos(ang)*dist, by = Math.sin(ang)*dist;
+    const fx = bx + (Math.random()-.5)*110;
+    const fy = by - (220 + Math.random()*320);
+    const rot = (Math.random()-.5)*420;
+    const base = 'translate(-50%,-50%) ';
+    const dur = 2600 + Math.random()*1100;
+    el.animate([
+      {transform: base+'translate(0px,0px) scale(.2) rotate(0deg)', opacity:0, easing:'cubic-bezier(.16,1,.3,1)'},
+      {offset:.34, transform: base+`translate(${bx}px,${by}px) scale(1) rotate(${rot*.4}deg)`, opacity:1, easing:'cubic-bezier(.45,.05,.55,.95)'},
+      {offset:.72, opacity:1},
+      {transform: base+`translate(${fx}px,${fy}px) scale(.75) rotate(${rot}deg)`, opacity:0}
+    ], {duration:dur, delay:Math.random()*140, fill:'both'}).onfinish = ()=>el.remove();
+  }
+}
+
+/* =========================================================
+   TELAS
+   ========================================================= */
+const screenProfile = $('#screen-profile');
+const screenBrowse = $('#screen-browse');
+const main = $('#main');
+
+function choose(profile, stage, srcEl){
+  if(state.busy) return;
+  state.busy = true;
+  state.profile = profile; state.stage = stage || null;
+  const r = srcEl.getBoundingClientRect();
+  burst(r.left + r.width/2, r.top + r.height/2);
+  setTimeout(()=>{ showBrowse(); state.busy = false; }, reduce ? 0 : 1000);
+}
+
+function showBrowse(){
+  screenProfile.classList.add('hidden');
+  screenBrowse.classList.remove('hidden');
+  const info = PROFILE_INFO[state.profile];
+  const av = $('#chip-av');
+  av.textContent = info.emoji;
+  av.className = 'mini g-'+info.color;
+  $('#chip-name').textContent = info.name;
+  $('#q').value = '';
+  renderBrowse();
+  window.scrollTo(0,0);
+  main.focus({preventScroll:true});
+}
+function showProfiles(){
+  screenBrowse.classList.add('hidden');
+  screenProfile.classList.remove('hidden');
+  $('#age').value = '';
+  window.scrollTo(0,0);
+}
+
+function cardHTML(c, badge){
+  const viewed = state.viewed.has(c.id) ? ' viewed' : '';
+  return `<button class="card g-${c.c}${viewed}" data-id="${c.id}" aria-label="${c.t}: ${c.s}">
+    ${badge ? `<span class="badge">${badge}</span>` : ''}
+    <span class="seen" aria-hidden="true">✓</span>
+    <span class="art"><span>${c.e}</span></span>
+    <span class="body"><span class="ct" style="display:block">${c.t}</span><span class="cs" style="display:block">${c.s}</span></span>
+  </button>`;
+}
+
+function rowHTML(row, cards, stageFirst){
+  let items = cards;
+  if(stageFirst && row.k==='etapa' && state.stage){
+    items = [...cards].sort((a,b)=> (a.id===state.stage?-1:0) - (b.id===state.stage?-1:0));
+  }
+  const html = items.map(c => cardHTML(c, (stageFirst && row.k==='etapa' && c.id===state.stage) ? 'Seu momento' : '')).join('');
+  return `<section class="row" id="row-${row.k}" aria-labelledby="h-${row.k}">
+    <h3 id="h-${row.k}">${row.t}</h3>
+    <p class="rsub">${row.s||''}</p>
+    <div class="scroller-wrap">
+      <button class="arrow l" aria-label="Anterior" data-dir="-1">‹</button>
+      <div class="scroller" role="list">${html}</div>
+      <button class="arrow r" aria-label="Próximo" data-dir="1">›</button>
+    </div>
+  </section>`;
+}
+
+function renderBrowse(){
+  const p = state.profile, h = HERO[p];
+  const rows = ROWS[p];
+  const all = CARDS[p];
+  let html = `<section class="hero g-${h.color}" aria-label="Destaque">
+      <div class="big" aria-hidden="true">${h.e}</div>
+      <p class="tag">${h.tag}</p>
+      <h2>${h.t}</h2>
+      <p class="d">${h.d}</p>
+      <div class="cta">
+        <button class="btn" data-go="${h.a[1]}">${h.a[0]}</button>
+        <button class="btn ghost" data-go="${h.b[1]}">${h.b[0]}</button>
+      </div>
+    </section>`;
+  rows.forEach(r=>{
+    const cs = all.filter(c=>c.row===r.k);
+    html += rowHTML(r, cs, true);
+  });
+  main.innerHTML = html;
+  state.list = all.map(c=>c.id);
+}
+
+function renderSearch(q){
+  const all = CARDS[state.profile];
+  const nq = norm(q.trim());
+  const found = all.filter(c=>c._h.includes(nq));
+  state.list = found.map(c=>c.id);
+  if(!found.length){
+    main.innerHTML = `<p class="empty">Não encontramos nada para “${q.replace(/</g,'&lt;')}”. Tente outra palavra, como <b>leite</b>, <b>sal</b>, <b>feijão</b> ou <b>rótulo</b>.</p>`;
+    return;
+  }
+  main.innerHTML = rowHTML({k:'busca', t:`Resultados para “${q.replace(/</g,'&lt;')}”`, s:`${found.length} ${found.length===1?'assunto':'assuntos'}`}, found, false);
+}
+
+/* ---------- eventos ---------- */
+$('#p-bebe').addEventListener('click', e=>choose('bebe', null, e.currentTarget));
+$('#p-crianca').addEventListener('click', e=>choose('crianca', null, e.currentTarget));
+$('#age').addEventListener('change', e=>{
+  const v = e.target.value; if(!v) return;
+  const [prof, stage] = v.split(':');
+  choose(prof, stage, e.target);
+});
+$('#switch').addEventListener('click', showProfiles);
+
+let qTimer;
+$('#q').addEventListener('input', e=>{
+  clearTimeout(qTimer);
+  const v = e.target.value;
+  qTimer = setTimeout(()=>{ v.trim().length>=2 ? renderSearch(v) : renderBrowse(); }, 160);
+});
+
+main.addEventListener('click', e=>{
+  const go = e.target.closest('[data-go]');
+  if(go){ const r = $('#row-'+go.dataset.go); if(r) r.scrollIntoView({behavior: reduce?'auto':'smooth', block:'start'}); return; }
+  const arrow = e.target.closest('.arrow');
+  if(arrow){
+    const sc = arrow.parentElement.querySelector('.scroller');
+    sc.scrollBy({left: Number(arrow.dataset.dir) * sc.clientWidth * .8, behavior: reduce?'auto':'smooth'});
+    return;
+  }
+  const card = e.target.closest('.card');
+  if(card) openCard(card.dataset.id);
+});
+
+/* ---------- janela de conteúdo ---------- */
+const modal = $('#modal');
+function findCard(id){ return [...CARDS.bebe, ...CARDS.crianca].find(c=>c.id===id); }
+
+function openCard(id){
+  const c = findCard(id); if(!c) return;
+  state.current = id;
+  state.viewed.add(id);
+  const sheet = $('#sheet');
+  sheet.className = 'sheet g-'+c.c;
+  $('#m-emoji').textContent = c.e;
+  $('#m-title').textContent = c.t;
+  $('#m-sub').textContent = c.s;
+  let body = `<p class="intro">${c.intro}</p><ul>${(c.p||[]).map(x=>`<li>${x}</li>`).join('')}</ul>`;
+  if(c.tip)  body += `<div class="note tip"><b class="k">Dica da mesa</b>${c.tip}</div>`;
+  if(c.warn) body += `<div class="note warn"><b class="k">Atenção</b>${c.warn}</div>`;
+  $('#m-body').innerHTML = body;
+  $('#m-body').scrollTop = 0;
+  const idx = state.list.indexOf(id);
+  const hasNext = idx > -1 && idx < state.list.length-1;
+  $('#m-next').style.visibility = hasNext ? 'visible' : 'hidden';
+  document.documentElement.style.overflow = 'hidden';
+  if(!modal.open) modal.showModal();
+  document.querySelectorAll(`.card[data-id="${id}"]`).forEach(el=>el.classList.add('viewed'));
+}
+function closeModal(){ if(modal.open) modal.close(); }
+modal.addEventListener('close', ()=>{ document.documentElement.style.overflow = ''; });
+modal.addEventListener('click', e=>{ if(e.target===modal) closeModal(); });
+$('#m-close').addEventListener('click', closeModal);
+$('#m-close2').addEventListener('click', closeModal);
+$('#m-next').addEventListener('click', ()=>{
+  const idx = state.list.indexOf(state.current);
+  if(idx > -1 && idx < state.list.length-1) openCard(state.list[idx+1]);
+});
+</script>
+</body>
+</html>
